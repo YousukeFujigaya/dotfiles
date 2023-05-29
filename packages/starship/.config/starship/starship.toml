@@ -1,0 +1,148 @@
+# Inserts a blank line between shell prompts
+add_newline = false
+
+right_format = """
+$pijul_channel\
+$docker_context\
+$package\
+$c\
+$cmake\
+$cobol\
+$daml\
+$dart\
+$deno\
+$dotnet\
+$elixir\
+$elm\
+$erlang\
+$fennel\
+$golang\
+$guix_shell\
+$haskell\
+$haxe\
+$helm\
+$java\
+$julia\
+$kotlin\
+$gradle\
+$lua\
+$nim\
+$nodejs\
+$ocaml\
+$opa\
+$perl\
+$php\
+$pulumi\
+$purescript\
+$python\
+$raku\
+$rlang\
+$red\
+$ruby\
+$rust\
+$scala\
+$swift\
+$terraform\
+$vlang\
+$vagrant\
+$zig\
+$buf\
+$nix_shell\
+$conda\
+$meson\
+$spack\
+$env_var\
+$crystal\
+$custom\
+$sudo\
+$jobs\
+$status\
+$container\
+$shell\
+$aws\
+$gcloud\
+$openstack\
+$azure\
+$battery\
+$os\
+$memory_usage\
+$time\
+"""
+
+format = """
+$username\
+$hostname\
+$localip\
+$shlvl\
+$singularity\
+$kubernetes\
+$directory\
+$vcsh\
+$fossil_branch\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$hg_branch\
+$character"""
+
+[hostname]
+ssh_only = true
+ssh_symbol = "󰇧 "
+
+[directory]
+format = "[  $path ]($style)"
+style = "fg:#F47FFF"
+truncation_length = 100
+truncate_to_repo = false
+home_symbol = "~"
+[directory.substitutions]
+"~/Repos/github.com/" = ""
+
+[git_branch]
+symbol = " "
+style = "fg:#00ff00"
+
+[git_status]
+# style = "fg:#769ff0"
+staged = '+[+$count](green)'
+up_to_date = '✓'
+ahead = '⇡[+$count](#769ff0)'
+deleted = '✘[$count](#E84D44)'
+ignore_submodules = true
+format = '([\[$conflicted$stashed$deleted$renamed$modified$untracked$ahead_behind$staged\]]($style) )'
+
+[time]
+disabled = false
+time_format = " %R"            # Hour:Minute Format
+format = "at [󱑓$time]($style)"
+style = "fg:#8DFBD2"
+
+[character]
+success_symbol = '[ ❯](bold green) '
+error_symbol = '[ ✗](#E84D44) '
+
+[package]
+symbol = " "
+
+[lua]
+symbol = "lua "
+
+[nodejs]
+symbol = "node "
+
+[rust]
+symbol = "rust "
+
+[golang]
+symbol = "go "
+
+[deno]
+symbol = "deno "
+
+[php]
+symbol = "php "
+
+[python]
+symbol = "python "

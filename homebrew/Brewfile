@@ -1,0 +1,80 @@
+# tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+# tap "homebrew/cask-versions"
+# tap "homebrew/core"
+# tap "homebrew/services"
+cask_args appdir: "/Applications"
+
+### --- for GNU utils --- ###
+brew "coreutils"
+brew "findutils"
+brew "gawk" # asdf required (for nodejs)
+brew "gnu-sed"
+brew "gnupg" # asdf required (for nodejs)
+brew "grep"
+brew "stow"
+# --------------------------------------------------
+# --- Manage Tool Version ---#
+brew "asdf"
+brew "awk"
+brew "bash"
+brew "curl"
+brew "exa"
+brew "fzf"
+brew "gh"
+brew "git"
+brew "git-delta"
+brew "navi"
+brew "ripgrep" # for nvim (telescope)
+
+# --------------------------------------------------
+
+brew "bat"
+brew "cmake"
+# brew "direnv"
+brew "fd" # for nvim (telescope)
+brew "ghq"
+brew "git-lfs"
+brew "hub"
+brew "jq"
+brew "lazygit"
+brew "mas"
+brew "neovim"
+brew "starship"
+# brew "tig"
+brew "trash"
+brew "tmux"
+brew "wget"
+brew "zsh"
+
+cask "1password"
+cask "1password-cli"
+cask "alacritty"
+cask "alfred"
+# cask "alt-tab"
+cask "appcleaner"
+cask "bettertouchtool"
+cask "brave-browser"
+cask "discord"
+cask "dropbox"
+cask "font-hack-nerd-font"
+# cask "font-sauce-code-pro-nerd-font"
+cask "google-chrome"
+# cask "google-japanese-ime" # MEMO: doesn't work for macOS Ventura
+cask "iterm2"
+cask "notion"
+cask "shiftit"
+# cask "slack"
+# cask "sourcetree"
+cask "visual-studio-code"
+# cask "zoom"
+
+### --- Apps from AppStore --- ###
+mas "Xcode", id: 497799835
+mas "Yoink", id: 457622435
+mas "Amphetamine", id: 937984704
+mas "LINE", id: 539883307
+
+# mas "FreeMan", id: 510934532
+# mas "PopClip", id: 445189367
