@@ -154,4 +154,3 @@ fzf-ghq() {
 }
 zle -N fzf-ghq
 bindkey '^[s' fzf-ghq
-bindkey 'ß' fzf-ghq # for alacritty
