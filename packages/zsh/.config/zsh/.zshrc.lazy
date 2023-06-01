@@ -66,6 +66,7 @@ esac
 (( ${+commands[trash]} )) && alias rm='trash'
 
 alias code='open -a "Visual Studio Code"'
+alias brave='open -a "Brave Browser"'
 alias gll='git log --graph --all --format="%x09%C(cyan bold)%an%Creset%x09%C(yellow)%h%Creset %C(magenta reverse)%d%Creset %s"'
 alias gb='hub browse $(ghq list | fzf | cut -d "/" -f 2,3)'
 
