@@ -1,2 +1,4 @@
-*.yml
-!/config.yml
+*
+
+!\.gitignore
+!config.yml

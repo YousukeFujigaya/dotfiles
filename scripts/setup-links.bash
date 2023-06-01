@@ -75,16 +75,13 @@ make_dir=(
     "$XDG_STATE_HOME"
     "$XDG_CACHE_HOME"
     "$XDG_CONFIG_HOME/zsh"
-    "$XDG_CONFIG_HOME/lazygit"
-    "$XDG_CONFIG_HOME/gh"
-    "$XDG_STATE_HOME/vim" # for .viminfo
 )
 for dir in "${make_dir[@]}"; do
     ensure_dir "$dir"
 done
 
-ensure_dir "$HOME/.ssh"
-chmod 700 "$HOME/.ssh"
+# ensure_dir "$HOME/.ssh"
+# chmod 700 "$HOME/.ssh"
 
 # ensure_dir "$HOME/.gnupg"
 # chmod 700 "$HOME/.gnupg"
