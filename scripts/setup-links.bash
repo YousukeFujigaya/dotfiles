@@ -80,8 +80,8 @@ for dir in "${make_dir[@]}"; do
     ensure_dir "$dir"
 done
 
-# ensure_dir "$HOME/.ssh"
-# chmod 700 "$HOME/.ssh"
+ensure_dir "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
 
 # ensure_dir "$HOME/.gnupg"
 # chmod 700 "$HOME/.gnupg"
