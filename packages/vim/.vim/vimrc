@@ -7,6 +7,7 @@ filetype plugin on
 let mapleader = " "
 let maplocalleader = " "
 
+
 """ ----- cursor style -----
 " Use a line cursor within insert mode and a block cursor everywhere else.
 "
@@ -22,16 +23,21 @@ let maplocalleader = " "
 "   Ps = 4  -> steady underline.
 "   Ps = 5  -> blinking bar (xterm).
 "   Ps = 6  -> steady bar (xterm).
-let &t_SI = "\e[6 q"
-let &t_EI = "\e[2 q"
-let &t_TI.= "\e[2 q" " Vim 起動時に非点滅のブロックタイプのカーソル
+let &t_ti.= "\e[2 q" " Vim 起動時に非点滅のブロックタイプのカーソル
+let &t_SI = "\e[6 q" " 挿入モード時に非点滅の縦棒タイプのカーソル
+let &t_EI = "\e[2 q" " ノーマルモード時に非点滅のブロックタイプのカーソル
+let &t_SR .= "\e[4 q" " 置換モード時に非点滅の下線タイプのカーソル
+let &t_te.="\e[0 q" " vim 終了時にカーソルを mintty のデフォルトに設定
 
+
+""" ----- cursor line  -----
 " Only show the cursor line in the active buffer.
 augroup CursorLine
     au!
     au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
     au WinLeave * setlocal nocursorline
 augroup END
+
 
 """ ----- options -----
 set nocompatible " Viとの互換性を無効にする
@@ -74,7 +80,6 @@ set cursorline
 set showmatch
 set noshowmode
 set laststatus=2
-" set statusline=%F%m\ %<[%{&fenc!=''?&fenc:&enc}]\ [%Y]\ [ln:%l,col:%v]
 set showtabline=2
 set ambiwidth=double
 " --- Controls
@@ -133,41 +138,38 @@ set undofile
 
 """ ----- Keymaps -----
 nnoremap ;      :
-nnoremap <silent>j      gj
-nnoremap <silent>k      gk
-nnoremap <silent><Down> gj
-nnoremap <silent><Up>   gk
-nnoremap <silent>sh     <C-w>h
-nnoremap <silent>sj     <C-w>j
-nnoremap <silent>sk     <C-w>k
-nnoremap <silent>sl     <C-w>l
-nnoremap <silent>sH     <C-w>H
-nnoremap <silent>sJ     <C-w>J
-nnoremap <silent>sK     <C-w>K
-nnoremap <silent>sL     <C-w>L
-nnoremap <silent><C-a>  ^
-nnoremap <silent><C-e>  $
-" nnoremap <silent>+      <C-a>
-" nnoremap <silent>-      <C-e>
-nnoremap <silent><C-\>  :vsplit<CR>
-nnoremap <silent><C-_>  :split<CR>
-nnoremap <silent><C-h>  :bprev<CR>
-nnoremap <silent><C-l>  :bnext<CR>
-nnoremap <silent><C-w>  :bdelete<CR>
-nnoremap <leader>q      :q<CR>
-inoremap <silent>jj     <ESC>
-nnoremap <ESC><ESC>     :nohlsearch<CR>
-inoremap <silent><Down> <C-\><C-o>gj
-inoremap <silent><Up>   <C-\><C-o>gk
-" inoremap <silent><S-Tab> <C-\><C-o><<
-inoremap <silent><C-a>  <C-o>I
-inoremap <silent><C-e>  <End>
-vnoremap <silent><C-a>  ^
-vnoremap <silent><C-e>  $
-" vnoremap <silent>+      <C-a>gv
-" vnoremap <silent>-      <C-x>gv
-" vnoremap <silent><C-i>  g<C-a>gv
-" vnoremap <silent>I      g<C-x>gv
+nnoremap <silent>j       gj
+nnoremap <silent>k       gk
+nnoremap <silent><Down>  gj
+nnoremap <silent><Up>    gk
+nnoremap <silent>sh      <C-w>h
+nnoremap <silent>sj      <C-w>j
+nnoremap <silent>sk      <C-w>k
+nnoremap <silent>sl      <C-w>l
+nnoremap <silent>sH      <C-w>H
+nnoremap <silent>sJ      <C-w>J
+nnoremap <silent>sK      <C-w>K
+nnoremap <silent>sL      <C-w>L
+nnoremap <silent><C-a>   ^
+nnoremap <silent><C-e>   $
+nnoremap <silent>+       <C-a>
+nnoremap <silent>_       <C-x>
+nnoremap <silent><C-\>   :vsplit<CR>
+nnoremap <silent><C-_>   :split<CR>
+nnoremap <silent><C-h>   :bprev<CR>
+nnoremap <silent><C-l>   :bnext<CR>
+nnoremap <silent><C-w>   :bdelete<CR>
+nnoremap <leader>q       :q<CR>
+nnoremap <silent><S-u>   <C-r>
+nnoremap <ESC><ESC>      :nohlsearch<CR>
+inoremap <silent>jj      <ESC>
+inoremap <silent><Down>  <C-\><C-o>gj
+inoremap <silent><Up>    <C-\><C-o>gk
+inoremap <silent><S-Tab> <C-\><C-o><<
+inoremap <silent><C-a>   <C-o>I
+inoremap <silent><C-e>   <End>
+vnoremap <silent><C-a>   ^
+vnoremap <silent><C-e>   $
 
 augroup MyKeyMaps
     autocmd!
@@ -176,7 +178,7 @@ augroup END
 
 
 """ ----- terminal -----
-command! -nargs=* T botright term <args> " `:T <command>` でterminalを下部に開いて<command>を実行する
+command! -nargs=* T botright term <args>
 
 
 " -----------------------------------------------------------------------------
