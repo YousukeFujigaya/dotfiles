@@ -1,21 +1,23 @@
-# tap "homebrew/bundle"
+tap "homebrew/bundle"
 tap "homebrew/cask"
 tap "homebrew/cask-fonts"
-# tap "homebrew/cask-versions"
-# tap "homebrew/core"
-# tap "homebrew/services"
+tap "homebrew/cask-versions"
+tap "homebrew/core"
+tap "homebrew/services"
+tap "koekeishiya/formulae"
 cask_args appdir: "/Applications"
 
 ### --- for GNU utils --- ###
 brew "coreutils"
 brew "findutils"
-brew "gawk" # asdf required (for nodejs)
+brew "gawk"
 brew "gnu-sed"
-brew "gnupg" # asdf required (for nodejs)
+brew "gnupg"
 brew "grep"
 brew "stow"
+
 # --------------------------------------------------
-# --- Manage Tool Version ---#
+
 brew "asdf"
 brew "awk"
 brew "bash"
@@ -26,14 +28,14 @@ brew "gh"
 brew "git"
 brew "git-delta"
 brew "navi"
-brew "ripgrep" # for nvim (telescope)
+brew "ripgrep"
 
 # --------------------------------------------------
 
 brew "bat"
 brew "cmake"
 # brew "direnv"
-brew "fd" # for nvim (telescope)
+brew "fd"
 brew "ghq"
 brew "git-lfs"
 brew "hub"
@@ -48,6 +50,13 @@ brew "tmux"
 brew "wget"
 brew "zsh"
 
+### --- Window Manager --- ###
+brew "skhd"
+brew "yabai"
+# cask "shiftit"
+
+# --------------------------------------------------
+
 cask "1password"
 cask "1password-cli"
 cask "alacritty"
@@ -59,12 +68,10 @@ cask "brave-browser"
 cask "discord"
 cask "dropbox"
 cask "font-hack-nerd-font"
-# cask "font-sauce-code-pro-nerd-font"
 cask "google-chrome"
 # cask "google-japanese-ime" # MEMO: doesn't work for macOS Ventura
 cask "iterm2"
 cask "notion"
-cask "shiftit"
 # cask "slack"
 # cask "sourcetree"
 cask "visual-studio-code"
