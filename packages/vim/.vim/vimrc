@@ -178,7 +178,7 @@ augroup END
 
 
 """ ----- terminal -----
-command! -nargs=* T botright term <args>
+" command! -nargs=* T botright term <args>
 
 
 " -----------------------------------------------------------------------------
@@ -209,7 +209,7 @@ function! Package(repo, ...)
         return
     endif
 
-    echo 'install ' . a:repo
+    echo 'installing ' . a:repo
     echo system('git clone ' . shellescape(url) . ' ' . shellescape(path))
 
     if has_key(arg, 'build')
