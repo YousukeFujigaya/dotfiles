@@ -48,8 +48,10 @@ alt + shift - j : yabai -m window --warp next
 alt - space : yabai -m window --toggle zoom-fullscreen
 
 # resize
+# Alt + Shift + ]
 alt + shift - 0x21 : yabai -m window --resize left:-40:0 \
     || yabai -m window --resize right:-40:0
+# Alt + Shift + [    
 alt + shift - 0x1E : yabai -m window --resize right:40:0 \
     || yabai -m window --resize left:40:0
 
@@ -58,8 +60,10 @@ alt + shift - 0x1E : yabai -m window --resize right:40:0 \
 ###########################################################
 
 # navigate
+# Alt + ,
 alt - 0x2B : yabai -m display --focus prev \
     && yabai -m display --focus stack.prev
+# Alt + .    
 alt - 0x2F : yabai -m display --focus next \
     && yabai -m display --focus stack.next
 
@@ -68,8 +72,10 @@ alt - 0x2F : yabai -m display --focus next \
 ###########################################################
 
 # send window
+# Shift + Alt + ,
 shift + alt - 0x2B : yabai -m window --display prev \
     && yabai -m display --focus prev
+# Shift + Alt + .
 shift + alt - 0x2F : yabai -m window --display next \
     && yabai -m display --focus next
 
