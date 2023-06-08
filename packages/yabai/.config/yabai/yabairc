@@ -25,5 +25,7 @@ yabai -m config debug_output on
 
 # Rules
 yabai -m rule --add app="^Simulator$"          manage=off
+yabai -m rule --add app="^System Settings$"    manage=off
+yabai -m rule --add app="^1Password$"          manage=off
 
 echo "yabai configuration loaded..."
