@@ -15,8 +15,25 @@ git:
 
 gui:
   showRandomTip: false
-  # showIcons: true
   showIcons: false
+  theme:
+    activeBorderColor:
+      - green
+      - bold
+    inactiveBorderColor:
+      - white
+    optionsTextColor:
+      - blue
+    selectedLineBgColor:
+      - "#3B4252" # set to `default` to have no background colour
+    selectedRangeBgColor:
+      - default
+    cherryPickedCommitBgColor:
+      - cyan
+    cherryPickedCommitFgColor:
+      - blue
+    unstagedChangesColor:
+      - red
 
 os:
   openCommand: "code --goto -- {{filename}}:{{line}}"
