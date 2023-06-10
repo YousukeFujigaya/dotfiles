@@ -17,8 +17,8 @@ source "${XDG_CONFIG_HOME}/zsh/fzf-key-bindings.zsh"
 #########################################################################
 export FZF_COMPLETION_TRIGGER='**' # default: '**'
 export FZF_TMUX=1
-export FZF_DEFAULT_COMMAND='fd --hidden --color=always'
-# export FZF_DEFAULT_COMMAND="rg --files --hidden -l -g '!.git/*' -g '!node_modules/*'"
+# export FZF_DEFAULT_COMMAND='fd --hidden --color=always'
+export FZF_DEFAULT_COMMAND="rg --files --hidden -l -g '!.git/*' -g '!node_modules/*'"
 
 ### --- FZF_TMUX_OPTS, FZF_DEFAULT_OPTS --- ###
 if [[ -n ${TMUX-} ]]; then
@@ -38,9 +38,9 @@ if [[ -n ${TMUX-} ]]; then
 EOF
     ) \
         --layout=reverse --border --ansi \
-        --preview-window 'right,60%,nowrap' \
+        --preview-window 'right,50%,nowrap' \
         --header 'Ctrl-\: Toggle Preview | Ctrl-P/N: Page Up/Down' \
-        --bind 'Ctrl-\:change-preview-window(hidden|)' \
+        --bind 'Ctrl-\:toggle-preview' \
         --bind 'ctrl-p:preview-half-page-up,ctrl-n:preview-half-page-down'"
 
     export FZF_TMUX_OPTS="-p 90% -y45"
@@ -53,26 +53,22 @@ else
 
     export FZF_DEFAULT_OPTS="$(
         cat <<"EOF"
---preview '
-      ( (type bat > /dev/null) &&
-        bat --color=always --line-range :200 {} \
-        || (cat {} | head -200) ) 2> /dev/null
-    '
+    --preview '
+          ( (type bat > /dev/null) &&
+            bat --color=always --line-range :200 {} \
+            || (cat {} | head -200) ) 2> /dev/null
+        '
 EOF
     ) \
-            --height 100% --layout=reverse --border --ansi \
-            --preview-window 'right,60%,nowrap' \
-            --header 'Ctrl-\: Toggle Preview | Ctrl-P/N: Page Up/Down' \
-            --bind 'ctrl-\:change-preview-window(hidden|)' \
-            --bind 'ctrl-p:preview-half-page-up,ctrl-n:preview-half-page-down'"
+                --height 100% --layout=reverse --border --ansi \
+                --preview-window 'right,50%,nowrap' \
+                --header 'Ctrl-\: Toggle Preview | Ctrl-P/N: Page Up/Down' \
+                --bind 'ctrl-\:change-preview-window(hidden|)' \
+                --bind 'ctrl-p:preview-half-page-up,ctrl-n:preview-half-page-down'"
 fi
 
 ### --- alias --- ###
-alias fzf="$(__fzfcmd) ${FZF_DEFAULT_OPTS-} --prompt 'All> ' \
-            --header 'Ctrl-\: Toggle Preview | Ctrl-D: Directories | Ctrl-F: Files | Ctrl-R: Reset and/or Reloaad | Ctrl-P/N: page up/down | Ctrl-l: Replace Query | Ctrl-w: Print Query' \
-            --bind 'ctrl-d:change-prompt(Directories> )+reload(fd --hidden --color=always --type d)' \
-            --bind 'ctrl-f:change-prompt(Files> )+reload(fd --hidden --color=always --type f)' \
-            --bind 'ctrl-r:change-prompt(All> )+reload(fd --hidden --color=always)'"
+alias fzf="$(__fzfcmd) ${FZF_DEFAULT_OPTS-} --preview-window 'hidden'"
 
 ### --- options --- ###
 export FZF_CTRL_R_OPTS=$(
@@ -82,7 +78,7 @@ export FZF_CTRL_R_OPTS=$(
   | awk "{ sub(/^[0-9]+-[0-9]+-[0-9]+ [0-9]+:[0-9]+/, \"\"); gsub(/\\\\n/, \"\\n\"); print }" \
   | bat --color=always --language=sh --style=plain
 '
---preview-window 'down,30%,wrap'
+--preview-window 'down,30%,hidden,wrap'
 EOF
 )
 
@@ -106,7 +102,7 @@ export FZF_CTRL_T_OPTS=$(
       --line-range :200 {} \
     || (cat {} | head -200) ) 2> /dev/null
 '
---preview-window 'right,60%,nowrap'
+--preview-window 'right,50%,nowrap'
 EOF
 )
 
@@ -143,7 +139,7 @@ bindkey '^X' find_cd
 # Tree表示
 fzf-ghq() {
     local repo=("$(ghq list | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-}" \
-        $(__fzfcmd) --preview "ghq list --full-path --exact {} | xargs exa \
+        $(__fzfcmd) --prompt 'Repository> ' --preview "ghq list --full-path --exact {} | xargs exa \
         -h --long --icons --classify --git --no-permissions --no-user --no-filesize --git-ignore --sort modified --reverse --tree --level 4")")
     if [ -n "$repo" ]; then
         repo=$(ghq list --full-path --exact $repo)
@@ -154,3 +150,19 @@ fzf-ghq() {
 }
 zle -N fzf-ghq
 bindkey '^[s' fzf-ghq
+
+# かつていたことのあるディレクトリに移動する
+fzf-z-search() {
+    local res=$(z | sort -rn | cut -c 12- | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-}" \
+        $(__fzfcmd) --preview "echo {} | xargs exa \
+        -h --long --icons --classify --git --no-permissions --no-user --no-filesize --git-ignore --sort modified --reverse --tree --level 4")
+    if [ -n "$res" ]; then
+        BUFFER+="cd $res"
+        zle accept-line
+    else
+        return 1
+    fi
+}
+
+zle -N fzf-z-search
+bindkey '^z' fzf-z-search

@@ -85,8 +85,7 @@ zle -N clear-screen clear-screen-and-update-prompt
 
 widget::history() {
     setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2> /dev/null
-    local selected=( "$(history -inr 1 | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-} --scheme=history \
-        --bind=ctrl-r:toggle-sort,ctrl-z:ignore ${FZF_CTRL_R_OPTS-} \
+    local selected=( "$(history -inr 1 | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-} --scheme=history ${FZF_CTRL_R_OPTS-} \
         --prompt 'History> ' --exit-0 --query '$LBUFFER'" $(__fzfcmd) | cut -d' ' -f4- | sed 's/\\n/\n/g')" )
     if [ -n "$selected" ]; then
         BUFFER="$selected"
@@ -114,7 +113,7 @@ widget::ghq::source() {
 widget::ghq::select() {
     local root="$(ghq root)"
     widget::ghq::source | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-} --exit-0 --prompt 'Repository> ' \
-      --preview='fzf-preview-git ${(q)root}/{+2}' --preview-window='right:60%' " \
+      --preview='fzf-preview-git ${(q)root}/{+2}' --preview-window='right:50%' " \
       $(__fzfcmd) | cut -d' ' -f2-
     # widget::ghq::source | fzf --exit-0 --preview="fzf-preview-git ${(q)root}/{+2}" --preview-window="right:60%" | cut -d' ' -f2-
 }
