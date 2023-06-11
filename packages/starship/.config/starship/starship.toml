@@ -93,35 +93,35 @@ ssh_symbol = "󰇧 "
 
 [directory]
 format = "[  $path ]($style)"
-style = "fg:#F47FFF"
-truncation_length = 100
-truncate_to_repo = false
 home_symbol = "~"
+style = "fg:#F47FFF"
+truncate_to_repo = false
+truncation_length = 100
 [directory.substitutions]
 "~/Repos/github.com/" = ""
 
 [git_branch]
-symbol = " "
 style = "fg:#00ff00"
+symbol = " "
 
 [git_status]
 # style = "fg:#769ff0"
 staged = '+[+$count](green)'
-up_to_date = '✓'
+# up_to_date = '✓'
 ahead = '⇡[+$count](#769ff0)'
 deleted = '✘[$count](#E84D44)'
-ignore_submodules = true
 format = '([\[$conflicted$stashed$deleted$renamed$modified$untracked$ahead_behind$staged\]]($style) )'
+ignore_submodules = true
 
 [time]
-disabled = false
-time_format = " %R"            # Hour:Minute Format
-format = "at [󱑓$time]($style)"
-style = "fg:#8DFBD2"
+disabled = false 
+format = "at [󱑓$time]($style)" 
+style = "fg:#8DFBD2" 
+time_format = " %R" # Hour:Minute Format
 
 [character]
-success_symbol = '[ ❯](bold green) '
 error_symbol = '[ ✗](#E84D44) '
+success_symbol = '[ ❯](bold green) '
 
 [package]
 symbol = " "
