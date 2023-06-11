@@ -401,8 +401,8 @@ let g:fzf_action = {
   \ 'ctrl-v': 'vsplit',
   \ 'ctrl-y': {lines -> setreg('*', join(lines, "\n"))}}
 
-nnoremap <leader>/  :BLines!<CR>
-nnoremap <leader>sf :Files!<CR>
+nnoremap <leader>/  :BLines<CR>
+nnoremap <leader>sf :Files<CR>
 
 " [Buffers] Jump to the existing window if possible
 let g:fzf_buffers_jump = 1
