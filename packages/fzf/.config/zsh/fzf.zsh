@@ -43,8 +43,8 @@ EOF
         --bind 'Ctrl-\:toggle-preview' \
         --bind 'ctrl-p:preview-half-page-up,ctrl-n:preview-half-page-down'"
 
-    export FZF_TMUX_OPTS="-p 90% -y45"
-    # export FZF_TMUX_OPTS="-p 96% -y45"
+    # export FZF_TMUX_OPTS="-p 90% -y45"
+    export FZF_TMUX_OPTS="-p 96% -y45"
 
 else
 
