@@ -29,6 +29,3 @@ use_pager = false
 [updates]
 auto_update = false
 auto_update_interval_hours = 720
-
-[directories]
-cache_dir = "tealdeer"
