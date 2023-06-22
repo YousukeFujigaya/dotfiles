@@ -65,7 +65,7 @@ zshaddhistory() {
   [[ ! "$line" =~ "^(cd|z|which|history|jj?|lazygit|la|ll|ls|rm|rmdir|trash)($| )" ]]
 }
 
-### Customize Prompt
+### Customize Prompt ###
 if command -v brew starship &> /dev/null; then
     eval "$(starship init zsh)"
 else
@@ -73,6 +73,11 @@ else
         atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
         atpull"%atclone" src"init.zsh"
     zinit light starship/starship
+fi
+
+### runtime tool manager ###
+if command -v rtx >/dev/null 2>&1; then
+    eval "$(rtx activate zsh)"
 fi
 
 ### key bindings ###

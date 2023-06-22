@@ -64,6 +64,7 @@ case "$OSTYPE" in
 esac
 
 (( ${+commands[trash]} )) && alias rm='trash'
+(( ${+commands[rtx]} )) && alias asdf='rtx'
 
 alias code='open -a "Visual Studio Code"'
 alias brave='open -a "Brave Browser"'
@@ -135,22 +136,28 @@ zinit wait lucid light-mode as'program' from'gh-r' for \
     pick'mmv*/mmv'      @'itchyny/mmv' \
     pick'ripgrep*/rg'   @'BurntSushi/ripgrep' \
 
-### asdf-vm ###
-__asdf_atload() {
-    if [ -d "$XDG_DATA_HOME/asdf" ];then
-        export ASDF_DATA_DIR="$XDG_DATA_HOME/asdf"
-        source "$ASDF_DATA_DIR/asdf.sh"
-    elif [ -d "$HOME/.asdf" ];then # brewでasdfをインストールしている場合
-        export ASDF_DATA_DIR="$HOME/.asdf" # sourceする必要はない
-    else
-        echo 'source /path/to/asdf/asdf.sh'
-    fi
-    export ASDF_CONFIG_FILE="$XDG_CONFIG_HOME/asdfrc"
-}
-zinit wait lucid light-mode for \
-    atpull'asdf plugin update --all' \
-    atload'__asdf_atload' \
-    @'asdf-vm/asdf'
+### runtime ###
+if command -v rtx >/dev/null 2>&1; then
+    export RTX_CACHE_DIR="$XDG_CACHE_HOME/rtx"
+    export ASDF_DATA_DIR="$XDG_DATA_HOME/asdf"
+else
+    ### asdf-vm ###
+    __asdf_atload() {
+        if [ -d "$XDG_DATA_HOME/asdf" ];then
+            export ASDF_DATA_DIR="$XDG_DATA_HOME/asdf"
+            source "$ASDF_DATA_DIR/asdf.sh"
+        elif [ -d "$HOME/.asdf" ];then # brewでasdfをインストールしている場合
+            export ASDF_DATA_DIR="$HOME/.asdf" # sourceする必要はない
+        else
+            echo 'source /path/to/asdf/asdf.sh'
+        fi
+        export ASDF_CONFIG_FILE="$XDG_CONFIG_HOME/asdfrc"
+    }
+    zinit wait lucid light-mode for \
+        atpull'asdf plugin update --all' \
+        atload'__asdf_atload' \
+        @'asdf-vm/asdf'
+fi
 
 ### GitHub CLI ###
 zinit wait lucid light-mode as'program' from'gh-r' for \
@@ -205,21 +212,23 @@ zinit wait lucid light-mode as'program' from'gh-r' for \
     @'denisidoro/navi'
 
 ### zeno.zsh ###
-export ZENO_HOME="$XDG_CONFIG_HOME/zeno"
-export ZENO_ENABLE_SOCK=1
-# export ZENO_DISABLE_BUILTIN_COMPLETION=1
-export ZENO_GIT_CAT="bat --color=always"
-export ZENO_GIT_TREE="exa --tree"
+# if command -v deno >/dev/null 2>&1; then
+#     export ZENO_HOME="$XDG_CONFIG_HOME/zeno"
+#     export ZENO_ENABLE_SOCK=1
+#     # export ZENO_DISABLE_BUILTIN_COMPLETION=1
+#     export ZENO_GIT_CAT="bat --color=always"
+#     export ZENO_GIT_TREE="exa --tree"
 
-__zeno_atload() {
-    bindkey ' '  zeno-auto-snippet
-    bindkey '^M' zeno-auto-snippet-and-accept-line
-    bindkey '^P' zeno-completion
-}
+#     __zeno_atload() {
+#         bindkey ' '  zeno-auto-snippet
+#         bindkey '^M' zeno-auto-snippet-and-accept-line
+#         bindkey '^P' zeno-completion
+#     }
 
-zinit wait lucid light-mode for \
-    atload'__zeno_atload' \
-    @'yuki-yano/zeno.zsh'
+#     zinit wait lucid light-mode for \
+#         atload'__zeno_atload' \
+#         @'yuki-yano/zeno.zsh'
+# fi
 
 ### Emojify ###
 # zinit wait lucid light-mode as'program' for \
@@ -237,22 +246,22 @@ zinit wait lucid light-mode as'program' for \
     @'wfxr/forgit'
 
 ### zsh-replace-multiple-dots ###
-__replace_multiple_dots_atload() {
-    replace_multiple_dots_exclude_go() {
-        if [[ "$LBUFFER" =~ '^go ' ]]; then
-            zle self-insert
-        else
-            zle .replace_multiple_dots
-        fi
-    }
+# __replace_multiple_dots_atload() {
+#     replace_multiple_dots_exclude_go() {
+#         if [[ "$LBUFFER" =~ '^go ' ]]; then
+#             zle self-insert
+#         else
+#             zle .replace_multiple_dots
+#         fi
+#     }
 
-    zle -N .replace_multiple_dots replace_multiple_dots
-    zle -N replace_multiple_dots replace_multiple_dots_exclude_go
-}
+#     zle -N .replace_multiple_dots replace_multiple_dots
+#     zle -N replace_multiple_dots replace_multiple_dots_exclude_go
+# }
 
-zinit wait lucid light-mode for \
-    atload'__replace_multiple_dots_atload' \
-    @'momo-lab/zsh-replace-multiple-dots'
+# zinit wait lucid light-mode for \
+#     atload'__replace_multiple_dots_atload' \
+#     @'momo-lab/zsh-replace-multiple-dots'
 
 ### tealdeer ###
 __tealdeer_atclone() {

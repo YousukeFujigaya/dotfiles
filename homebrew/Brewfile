@@ -1,10 +1,9 @@
 tap "homebrew/bundle"
-tap "homebrew/cask"
 tap "homebrew/cask-fonts"
 tap "homebrew/cask-versions"
-tap "homebrew/core"
 tap "homebrew/services"
 tap "koekeishiya/formulae"
+tap "jdxcode/tap"
 cask_args appdir: "/Applications"
 
 ### --- for GNU utils --- ###
@@ -18,7 +17,7 @@ brew "stow"
 
 # --------------------------------------------------
 
-brew "asdf"
+# brew "asdf"
 brew "awk"
 brew "bash"
 brew "curl"
@@ -43,8 +42,8 @@ brew "jq"
 brew "lazygit"
 brew "mas"
 brew "neovim"
+brew "rtx"
 brew "starship"
-# brew "tig"
 brew "trash"
 brew "tmux"
 brew "wget"
@@ -53,7 +52,6 @@ brew "zsh"
 ### --- Window Manager --- ###
 brew "skhd"
 brew "yabai"
-# cask "shiftit"
 
 # --------------------------------------------------
 
@@ -69,7 +67,7 @@ cask "discord"
 cask "dropbox"
 cask "font-hack-nerd-font"
 cask "google-chrome"
-# cask "google-japanese-ime" # MEMO: doesn't work for macOS Ventura
+# cask "google-japanese-ime"
 cask "iterm2"
 cask "notion"
 # cask "slack"
