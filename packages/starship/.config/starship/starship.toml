@@ -109,7 +109,7 @@ symbol = " "
 staged = '+[+$count](green)'
 # up_to_date = '✓'
 ahead = '⇡[+$count](#769ff0)'
-deleted = '✘[$count](#E84D44)'
+deleted = '✘[$count](#769ff0)'
 format = '([\[$conflicted$stashed$deleted$renamed$modified$untracked$ahead_behind$staged\]]($style) )'
 ignore_submodules = true
 

@@ -61,9 +61,9 @@ fi
 if [ ! "$skip_apps" ]; then
     log "Installing Apps and CLIs..."
     if is_file "${REPO_DIR}/homebrew/Brewfile"; then
-        brew bundle install --file "${REPO_DIR}/homebrew/Brewfile" $([ -n "$verbose" ] && echo -v)
+        brew bundle install --file "${REPO_DIR}/homebrew/Brewfile" --no-lock $([ -n "$verbose" ] && echo -v)
     else
-        brew bundle install --file "${GHQ_ROOT_PATH}/github.com/${GITHUB_USER_NAME}/dotfiles/homebrew/Brewfile" $([ -n "$verbose" ] && echo -v)
+        brew bundle install --file "${GHQ_ROOT_PATH}/github.com/${GITHUB_USER_NAME}/dotfiles/homebrew/Brewfile" --no-lock $([ -n "$verbose" ] && echo -v)
     fi
 fi
 

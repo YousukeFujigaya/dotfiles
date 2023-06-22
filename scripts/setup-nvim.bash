@@ -14,6 +14,6 @@ elif is_dir "$GHQ_ROOT_PATH/github.com/$GITHUB_USER_NAME/nvim" && ! is_dir "$XDG
     ln -sfnv "$GHQ_ROOT_PATH/github.com/$GITHUB_USER_NAME/nvim" "$XDG_CONFIG_HOME/nvim"
 else
     log "Nvim Repository is already cloned."
-    log "Updating Nvim Repository..."
-    git -C "$GHQ_ROOT_PATH/github.com/$GITHUB_USER_NAME/nvim" pull
+    # log "Updating Nvim Repository..."
+    # git -C "$GHQ_ROOT_PATH/github.com/$GITHUB_USER_NAME/nvim" pull
 fi
