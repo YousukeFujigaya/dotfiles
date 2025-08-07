@@ -165,19 +165,20 @@ zinit wait lucid light-mode as'program' from'gh-r' for \
     atclone'./gh*/bin/gh completion -s zsh >_gh' atpull'%atclone' \
     @'cli/cli'
 
-### exa ###
-__exa_atload() {
-    alias ls='exa --group-directories-first'
-    alias la='exa --group-directories-first -a'
-    # alias ll='exa --group-directories-first -al --header --color-scale --git --icons --time-style=long-iso'
-    alias ll='exa --group-directories-first -al --header --color-scale --git --no-user --time-style=long-iso'
-    alias tree='exa --group-directories-first -T --icons'
+### eza(旧exa) ###
+__eza_atload() {
+    alias ls='eza --group-directories-first'
+    alias la='eza --group-directories-first -a'
+    # alias ll='eza --group-directories-first -al --header --color-scale --git --icons --time-style=long-iso'
+    alias ll='eza --group-directories-first -al --header --color-scale --git --icons --no-user --time-style=long-iso'
+    # alias ll='eza --icons --git --time-style relative -al'
+    alias tree='eza --group-directories-first -T --icons'
     # alias lt='ll -TL 4 --ignore-glob=.git --git-ignore'
 }
 zinit wait lucid light-mode as'program' from'gh-r' for \
-    pick'bin/exa' \
-    atclone'cp -f completions/exa.zsh _exa' atpull'%atclone' \
-    atload'__exa_atload' \
+    pick'bin/eza' \
+    atclone'cp -f completions/eza.zsh _eza' atpull'%atclone' \
+    atload'__eza_atload' \
     @'ogham/exa'
 
 ### yq ###
