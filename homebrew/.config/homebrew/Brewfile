@@ -1,0 +1,83 @@
+tap "koekeishiya/formulae"
+cask_args appdir: "/Applications"
+
+### --- for GNU utils --- ###
+brew "coreutils"
+brew "findutils"
+brew "gawk"
+brew "gnu-sed"
+brew "gnupg"
+brew "grep"
+brew "stow"
+
+# --------------------------------------------------
+
+# brew "asdf"
+brew "awk"
+brew "bash"
+brew "curl"
+brew "eza"
+brew "fzf"
+brew "gh"
+brew "git"
+brew "git-delta"
+brew "navi"
+brew "ripgrep"
+
+# --------------------------------------------------
+
+brew "bat"
+brew "cmake"
+# brew "direnv"
+brew "fd"
+brew "ghq"
+brew "git-lfs"
+brew "hub"
+brew "jq"
+brew "lazygit"
+brew "lf"
+brew "mas"
+# brew "neovim"
+brew "rtx"
+brew "starship"
+brew "trash"
+brew "tmux"
+brew "wget"
+brew "zsh"
+
+### --- Window Manager --- ###
+brew "skhd"
+brew "yabai"
+
+# --------------------------------------------------
+
+cask "1password"
+# cask "1password-cli"
+cask "alacritty"
+cask "alfred"
+# cask "alt-tab"
+cask "appcleaner"
+cask "bettertouchtool"
+cask "brave-browser"
+cask "discord"
+cask "dropbox"
+cask "font-hack-nerd-font"
+cask "google-chrome"
+cask "google-drive"
+cask "google-japanese-ime"
+cask "iterm2"
+cask "notion"
+cask "notion-calendar"
+# cask "slack"
+# cask "sourcetree"
+cask "visual-studio-code"
+# cask "zoom"
+
+### --- Apps from AppStore --- ###
+mas "Xcode", id: 497799835
+mas "Yoink", id: 457622435
+mas "Amphetamine", id: 937984704
+mas "LINE", id: 539883307
+
+# mas "FreeMan", id: 510934532
+# mas "PopClip", id: 445189367
