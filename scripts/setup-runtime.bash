@@ -4,16 +4,13 @@ set -e
 source "$(dirname "$0")/common.bash"
 source "$(dirname "$0")/utils.sh"
 
-if command -v rtx >/dev/null 2>&1; then
-    if is_file "$HOME/.local/bin/setup-rtx.bash"; then
-        /bin/bash "$HOME/.local/bin/setup-rtx.bash"
+if command -v mise >/dev/null 2>&1; then
+    if is_file "$HOME/.local/bin/setup-mise.bash"; then
+        /bin/bash "$HOME/.local/bin/setup-mise.bash"
     else
-        /bin/bash "$CUR_DIR/setup-rtx.bash"
+        /bin/bash "$CUR_DIR/setup-mise.bash"
     fi
 else
-    if is_file "$HOME/.local/bin/setup-asdf.bash"; then
-        /bin/bash "$HOME/.local/bin/setup-asdf.bash"
-    else
-        /bin/bash "$CUR_DIR/setup-asdf.bash"
-    fi
+    log "mise is not installed. Please install mise first."
+    exit 1
 fi

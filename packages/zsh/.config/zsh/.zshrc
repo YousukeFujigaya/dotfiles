@@ -18,6 +18,7 @@ path=(
   "/opt/homebrew/bin"(N-/)
   "/opt/homebrew/sbin"(N-/)
   "$HOME/.local/bin"(N-/)
+  "$HOME/.local/share/npm/bin"(N-/)
   "$CARGO_HOME/bin"(N-/)
   "$GOPATH/bin"(N-/)
   "$DENO_INSTALL/bin"(N-/)
@@ -75,8 +76,8 @@ else
 fi
 
 ### runtime tool manager ###
-if command -v rtx >/dev/null 2>&1; then
-    eval "$(rtx activate zsh)"
+if command -v mise >/dev/null 2>&1; then
+    eval "$(mise activate zsh)"
 fi
 
 ### key bindings ###

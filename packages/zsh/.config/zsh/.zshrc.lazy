@@ -64,7 +64,7 @@ case "$OSTYPE" in
 esac
 
 (( ${+commands[trash]} )) && alias rm='trash'
-(( ${+commands[rtx]} )) && alias asdf='rtx'
+(( ${+commands[mise]} )) && alias asdf='mise'
 
 alias code='open -a "Visual Studio Code"'
 alias brave='open -a "Brave Browser"'
@@ -137,26 +137,10 @@ zinit wait lucid light-mode as'program' from'gh-r' for \
     pick'ripgrep*/rg'   @'BurntSushi/ripgrep' \
 
 ### runtime ###
-if command -v rtx >/dev/null 2>&1; then
-    export RTX_CACHE_DIR="$XDG_CACHE_HOME/rtx"
-    export ASDF_DATA_DIR="$XDG_DATA_HOME/asdf"
-else
-    ### asdf-vm ###
-    __asdf_atload() {
-        if [ -d "$XDG_DATA_HOME/asdf" ];then
-            export ASDF_DATA_DIR="$XDG_DATA_HOME/asdf"
-            source "$ASDF_DATA_DIR/asdf.sh"
-        elif [ -d "$HOME/.asdf" ];then # brewでasdfをインストールしている場合
-            export ASDF_DATA_DIR="$HOME/.asdf" # sourceする必要はない
-        else
-            echo 'source /path/to/asdf/asdf.sh'
-        fi
-        export ASDF_CONFIG_FILE="$XDG_CONFIG_HOME/asdfrc"
-    }
-    zinit wait lucid light-mode for \
-        atpull'asdf plugin update --all' \
-        atload'__asdf_atload' \
-        @'asdf-vm/asdf'
+if command -v mise >/dev/null 2>&1; then
+    export MISE_CACHE_DIR="$XDG_CACHE_HOME/mise"
+    export MISE_CONFIG_DIR="$XDG_CONFIG_HOME/mise"
+    export MISE_DATA_DIR="$XDG_DATA_HOME/mise"
 fi
 
 ### GitHub CLI ###

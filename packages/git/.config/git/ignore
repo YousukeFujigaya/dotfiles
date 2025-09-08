@@ -45,3 +45,8 @@ node_modules/
 \_todo*
 \_TEST*
 \_test*
+
+### Claude Code
+
+CLAUDE.md
+.claude/

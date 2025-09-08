@@ -12,7 +12,7 @@ brew "stow"  # Symlink farm manager for dotfiles
 
 # --------------------------------------------------
 
-brew "asdf"  # Version manager for multiple languages
+brew "mise"  # Version manager for multiple languages (replaces asdf)
 brew "awk"  # Pattern scanning and processing language
 brew "bash"  # Bourne Again Shell
 brew "curl"  # Command line tool for transferring data with URLs
@@ -34,7 +34,7 @@ brew "fd"  # Simple, fast alternative to find
 brew "gemini-cli"  # Command line client for Gemini protocol
 brew "ghq"  # Git repository manager for organizing cloned repos
 brew "git-lfs"  # Git extension for versioning large files
-brew "go"  # Go programming language
+# brew "go"  # Go programming language (managed by mise)
 brew "hub"  # GitHub wrapper for git command
 brew "jq"  # JSON processor and query tool
 brew "lazygit"  # Terminal UI for git commands
@@ -42,10 +42,9 @@ brew "lf"  # Terminal file manager
 brew "libssh2"  # C library implementing SSH2 protocol
 brew "mas"  # Mac App Store command line interface
 brew "neovim"  # Vim-based text editor
-brew "node"  # Node.js JavaScript runtime
+# brew "node"  # Node.js JavaScript runtime (managed by mise)
 brew "openssl@3"  # Cryptography and SSL/TLS toolkit
-brew "php"  # PHP programming language
-brew "python@3.13"  # Python programming language version 3.13
+# brew "python@3.13"  # Python programming language version 3.13 (managed by mise)
 brew "starship"  # Cross-shell customizable prompt
 brew "tesseract"  # OCR (Optical Character Recognition) engine
 brew "tesseract-lang"  # Language packages for tesseract OCR
@@ -53,6 +52,11 @@ brew "tmux"  # Terminal multiplexer
 brew "trash", link: true  # Move files to trash from command line
 brew "wget"  # Internet file retriever
 brew "zsh"  # Z shell with extended features
+
+# C/C++ Development Tools
+brew "cmake"  # Cross-platform build system
+brew "llvm"   # LLVM compiler infrastructure (newer clang)
+brew "gdb"    # GNU debugger
 
 ### --- Window Manager --- ###
 brew "koekeishiya/formulae/skhd"  # Hotkey daemon for macOS
