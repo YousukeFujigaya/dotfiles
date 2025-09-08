@@ -87,7 +87,7 @@ history = 10000
 save_to_clipboard = true
 semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
-[shell]
+[terminal.shell]
 args = ["new-session", "-D", "-c", "#{pane_current_path}"]
 program = "/opt/homebrew/bin/tmux"
 
@@ -98,6 +98,8 @@ dynamic_title = true
 opacity = 1.0
 option_as_alt = "OnlyLeft"
 startup_mode = "Maximized"
+# Reduce flickering
+resize_increments = true
 
 [window.padding]
 x = 0
@@ -107,3 +109,9 @@ y = 0
 live_config_reload = true
 
 [terminal]
+# Reduce terminal flickering
+osc52 = "CopyPaste"
+
+[env]
+# Set terminal capabilities to reduce flickering
+TERM = "alacritty"
