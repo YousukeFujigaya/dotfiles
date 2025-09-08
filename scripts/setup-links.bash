@@ -26,9 +26,57 @@ for i in "$@"; do
         unlink_all=1
         shift
         ;;
+    --clean-broken)
+        clean_broken=1
+        shift
+        ;;
     *) ;;
     esac
 done
+
+###########################################################
+# Clean broken symlinks
+###########################################################
+if [ "$clean_broken" = 1 ]; then
+    log 'Searching for broken symlinks in ~/.config...'
+    
+    # Find broken symlinks that point to dotfiles packages
+    broken_links=()
+    while IFS= read -r -d '' link; do
+        if [[ -L "$link" ]] && [[ ! -e "$link" ]]; then
+            target=$(readlink "$link")
+            # Check if the symlink points to our dotfiles packages
+            if [[ "$target" == *"dotfiles/packages/"* ]]; then
+                broken_links+=("$link")
+            fi
+        fi
+    done < <(find "$HOME/.config" -type l -print0 2>/dev/null)
+    
+    if [ ${#broken_links[@]} -eq 0 ]; then
+        log 'No broken symlinks found.'
+        exit 0
+    fi
+    
+    log "Found ${#broken_links[@]} broken symlinks:"
+    for link in "${broken_links[@]}"; do
+        target=$(readlink "$link")
+        echo "  $link -> $target"
+    done
+    
+    echo
+    read -p "Do you want to remove these broken symlinks? (y/N): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        for link in "${broken_links[@]}"; do
+            log "Removing broken symlink: $link"
+            rm "$link"
+        done
+        log 'Broken symlinks removed successfully.'
+    else
+        log 'Skipped removing broken symlinks.'
+    fi
+    exit 0
+fi
 
 ###########################################################
 # Unlink
