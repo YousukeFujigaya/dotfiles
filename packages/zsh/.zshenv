@@ -16,6 +16,7 @@ export GHQ_GET_PATH="$GHQ_ROOT_PATH/github.com"
 
 ### homebrew ###
 export HOMEBREW_NO_AUTO_UPDATE=1
+export HOMEBREW_BUNDLE_FILE="$XDG_CONFIG_HOME/homebrew/Brewfile"
 
 ### zsh ###
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh" # .zshrc を ~/.config/zsh から読み込むように設定

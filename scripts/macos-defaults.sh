@@ -56,11 +56,12 @@ defaults write com.apple.dock wvous-bl-modifier -int 0
 # Keyboard
 ###########################################################
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false # Disable press-and-hold for keys in favor of key repeat
-defaults write NSGlobalDomain com.apple.keyboard.fnState -bool true # Fuキーを標準のファンクションキーとして使用
+defaults write NSGlobalDomain com.apple.keyboard.fnState -bool true # Fnキーを標準のファンクションキーとして使用
 defaults write NSGlobalDomain KeyRepeat -int 1 # リピート入力のスピードをはやく
 defaults write NSGlobalDomain InitialKeyRepeat -int 14 # リピート入力認識時間
 defaults write -g NSAutomaticSpellingCorrectionEnabled -bool false # スペルの訂正を無効にする
 
+### Key bindings
 # CapsLock を Ctrl に変更する (need to restart macOS)
 # get string like : 1452-630-0 for keyboard_id
 keyboard_id="$(ioreg -c AppleEmbeddedKeyboard -r | grep -Eiw "VendorID|ProductID" | awk '{ print $4 }' | paste -s -d'-\n' -)-0"
@@ -72,6 +73,9 @@ defaults -currentHost write -g com.apple.keyboard.modifiermapping.${keyboard_id}
   <integer>30064771129</integer>\
 </dict>
 "
+
+# 「次のウインドウを操作対象にする」を Opt + Tab に割り当てる
+# defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 27 "<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>65535</integer><integer>48</integer><integer>524288</integer></array><key>type</key><string>standard</string></dict></dict>"
 
 ###########################################################
 # Trackpad, Mouse
@@ -114,10 +118,11 @@ defaults write com.apple.dock launchanim -bool false #起動中アプリのバ�
 ###########################################################
 defaults write com.apple.finder QuitMenuItem -bool true # FinderをQuitできるように
 defaults write com.apple.finder CreateDesktop -boolean false # Desktop上のファイル等を非表示に
-defaults write com.apple.finder FinderSounds -bool no # Finderの効果音を無効にする
-defaults write com.apple.finder AppleShowAllFiles YES # `Shift + .`で隠しファイルや隠しフォルダを表示
+defaults write com.apple.finder FinderSounds -bool false # Finderの効果音を無効にする
+defaults write com.apple.finder AppleShowAllFiles true # `Shift + .`で隠しファイルや隠しフォルダを表示
 defaults write com.apple.finder ShowStatusBar -bool true # ステータスバーを表示
-defaults write com.apple.finder _FXShowPosixPathInTitle -bool YES # タイトルバーにフルパスを表示
+defaults write com.apple.finder ShowPathbar -bool true # パスバーを表示
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true # タイトルバーにフルパスを表示
 defaults write com.apple.finder DisableAllAnimations -bool true # Finderのアニメーション効果を全て無効にする
 defaults write com.apple.finder AnimateWindowZoom -bool false # フォルダを開くときのアニメーションを無効
 defaults write -g NSAutomaticWindowAnimationsEnabled -bool false # ファイルを開くときのアニメーションを無効
@@ -150,10 +155,10 @@ defaults write com.apple.finder QLEnableTextSelection -bool true # Quick Look上
 # defaults write NSGlobalDomain _HIHideMenuBar -bool true # メニューバーを常に非表示に
 
 # 日付と時刻のフォーマット（24時間表示、日付・曜日を表示）
-# defaults write com.apple.iCal "number of hours displayed" 24 # 24 hour view for Menu Bar
-defaults write com.apple.menuextra.clock DateFormat -string "M\u6708d\u65e5(EEE)  H:mm:ss"
+defaults write com.apple.iCal "number of hours displayed" 24 # 24 hour view for Menu Bar
+defaults write com.apple.menuextra.clock DateFormat -string "M\u6708d\u65e5(EEE)  h:mm:ss"
 
-# Hide the battery percentage from the menu bar （バッテリーのパーセントを表示する）
+# Show the battery percentage from the menu bar （バッテリーのパーセントを表示する）
 defaults write com.apple.menuextra.battery ShowPercent -string "YES"
 
 ###########################################################
@@ -168,7 +173,9 @@ defaults write com.apple.QuickTimePlayerX NSQuitAlwaysKeepsWindows -bool false #
 ###########################################################
 # Screenshot
 ###########################################################
-defaults write com.apple.screencapture location ~/Screenshot # キャプチャの保存場所を変更
-defaults write com.apple.screencapture disable-shadow -boolean true # キャプチャに影を付けない
+# defaults write com.apple.screencapture location ~/Screenshot # キャプチャの保存場所を変更
+defaults write com.apple.screencapture name ScreenShot # スクリーンショットの名前を変更
+# defaults write com.apple.screencapture include-date -bool false # 名前の日付部分を非表示
+defaults write com.apple.screencapture disable-shadow -bool true # キャプチャに影を付けない
 
 ### NOTE: To enable these settings, Need to Restart macOS

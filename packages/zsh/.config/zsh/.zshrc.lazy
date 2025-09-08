@@ -9,7 +9,7 @@ fi
 
 if [ ! -d "$GHQ_ROOT_PATH/github.com/rupa/z" ]; then
     ghq get rupa/z
-    mkdir "$XDG_CASHE_HOME"/z
+    mkdir "$XDG_CACHE_HOME"/z
     if [ ! -d "$_Z_HOME" ]; then
         echo "Linking z Repository to $XDG_CONFIG_HOME ..."
         ln -sfnv "$GHQ_ROOT_PATH/github.com/rupa/z" "$XDG_DATA_HOME/z"
@@ -297,7 +297,7 @@ zstyle ':completion:*' cache-path $XDG_STATE_HOME/zsh/zcompdump
 export GPG_TTY="$(tty)"
 
 ### wget ###
-((${+commands[wget]})) && alias='wget --hsts-file="$XDG_STATE_HOME/wget-hsts"'
+((${+commands[wget]})) && alias wget='wget --hsts-file="$XDG_STATE_HOME/wget-hsts"'
 
 ### Make ###
 alias make='make -j$(($(nproc)+1))'

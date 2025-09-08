@@ -20,6 +20,7 @@ alt + shift - i : yabai -m window --insert south
 # alt - return : alacritty --working-directory $HOME/projects/github.com/JunichiSugiura
 alt - return : open /Applications/Alacritty.app
 alt - 0 : open -n /Applications/Brave\ Browser.app
+# alt - 0 : open -n /Applications/Google\ Chrome.app
 alt + shift - n : open /Applications/Notion.app
 
 # close
@@ -45,13 +46,13 @@ alt + shift - k : yabai -m window --warp prev
 alt + shift - j : yabai -m window --warp next
 
 # full screen
-alt - space : yabai -m window --toggle zoom-fullscreen
+cmd + alt + ctrl - space : yabai -m window --toggle zoom-fullscreen
 
 # resize
 # Alt + Shift + ]
 alt + shift - 0x21 : yabai -m window --resize left:-40:0 \
     || yabai -m window --resize right:-40:0
-# Alt + Shift + [    
+# Alt + Shift + [
 alt + shift - 0x1E : yabai -m window --resize right:40:0 \
     || yabai -m window --resize left:40:0
 
@@ -63,7 +64,7 @@ alt + shift - 0x1E : yabai -m window --resize right:40:0 \
 # Alt + ,
 alt - 0x2B : yabai -m display --focus prev \
     && yabai -m display --focus stack.prev
-# Alt + .    
+# Alt + .
 alt - 0x2F : yabai -m display --focus next \
     && yabai -m display --focus stack.next
 
@@ -73,10 +74,10 @@ alt - 0x2F : yabai -m display --focus next \
 
 # send window
 # Shift + Alt + ,
-shift + alt - 0x2B : yabai -m window --display prev \
+cmd + ctrl + alt - 0x2B : yabai -m window --display prev \
     && yabai -m display --focus prev
 # Shift + Alt + .
-shift + alt - 0x2F : yabai -m window --display next \
+cmd + ctrl + alt - 0x2F : yabai -m window --display next \
     && yabai -m display --focus next
 
 # toggle mission control
@@ -84,6 +85,21 @@ shift + alt - m : yabai -m space --toggle mission-control
 
 # reset split balance
 shift + alt - e : yabai -m space --balance
+
+# float / unfloat window and restore position
+# alt - t : yabai -m window --toggle float && /tmp/yabai-restore/$(yabai -m query --windows --window | jq -re '.id').restore 2>/dev/null || true
+# alt - t : yabai -m window --toggle float && yabai -m window --grid 4:4:1:1:2:2
+
+# fload / unfloat window and show center position
+# shift + alt - c : yabai -m window --toggle float && yabai -m window --grid 10:10:1:1:8:8 && /tmp/yabai-restore/$(yabai -m query --windows --window | jq -re '.id').restore 2>/dev/null || true
+shift + alt - c : ~/.config/yabai/toggle_float_focus.sh
+
+# cmd + alt + ctrl - c : bash -lc 'yabai -m window --toggle float && yabai -m window --grid 10:10:1:1:8:8; wid=$(yabai -m query --windows --window | jq -r ".id" 2>/dev/null); [ -n "$wid" ] && [ -x "/tmp/yabai-restore/${wid}.restore" ] && "/tmp/yabai-restore/${wid}.restore" 2>/dev/null || true; is_float=$(yabai -m query --windows --window | jq -r ".floating" 2>/dev/null); if [ "$is_float" = "1" ]; then osascript -e '\''tell application "HazeOver" to set enabled to true'\''; else osascript -e '\''tell application "HazeOver" to set enabled to false'\''; fi'
+
+
+# float / unfloat window and resize half window
+# ctrl + alt - 1 : yabai -m window --toggle float && yabai -m window --grid 1:2:0:0:1:1
+# ctrl + alt - 0 : yabai -m window --toggle float && yabai -m window --grid 1:2:1:0:1:11
 
 ###########################################################
 # Stackline

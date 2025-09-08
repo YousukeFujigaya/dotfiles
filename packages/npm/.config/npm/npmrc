@@ -1,1 +1,4 @@
-cache=${NPM_CACHE_DIR}/cache
+cache=${NPM_CACHE_DIR}
+prefix=${NPM_DATA_DIR}
+tmp=${NPM_CACHE_DIR}/tmp
+init-module=${NPM_CONFIG_DIR}/npm-init.js

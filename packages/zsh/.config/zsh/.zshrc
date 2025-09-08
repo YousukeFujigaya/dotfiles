@@ -36,7 +36,7 @@ fpath=(
 export HISTFILE="$XDG_STATE_HOME/zsh/history"
 export HISTSIZE=12000
 export SAVEHIST=1000000
-export EDITOR="nvim"
+export EDITOR="vim"
 export TERMINAL="alacritty"
 # export BROWSER="brave"
 
@@ -61,7 +61,6 @@ setopt NO_FLOW_CONTROL
 
 zshaddhistory() {
   local line="${1%%$'\n'}"
-#   [[ ! "$line" =~ "^(cd|which|history|jj?|lazygit|la|ll|ls|rm|rmdir|trash)($| )" ]]
   [[ ! "$line" =~ "^(cd|z|which|history|jj?|lazygit|la|ll|ls|rm|rmdir|trash)($| )" ]]
 }
 
@@ -204,6 +203,6 @@ zle -N zle-keymap-select
 ### plugins ###
 zinit light @'zsh-users/zsh-autosuggestions' # MEMO: ここでloadしないとshell起動時に機能しなかった。
 
-zinit wait lucid null for \
+zinit wait lucid null silent nocd for \
   atinit'source "$ZDOTDIR/.zshrc.lazy"' \
   @'zdharma-continuum/null'
