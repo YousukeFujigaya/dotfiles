@@ -25,3 +25,9 @@ experimental = false
 
 # Log level (error, warn, info, debug, trace)
 log_level = "info"
+
+[tools]
+node = "latest"
+python = "3.11"
+go = "1.21"
+yarn = "latest"

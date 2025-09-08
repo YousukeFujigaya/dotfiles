@@ -37,7 +37,12 @@ fpath=(
 export HISTFILE="$XDG_STATE_HOME/zsh/history"
 export HISTSIZE=12000
 export SAVEHIST=1000000
-export EDITOR="vim"
+
+### Editor ###
+export EDITOR="vi"
+command -v vim >/dev/null && EDITOR="vim"
+command -v nvim >/dev/null && EDITOR="nvim"
+export GIT_EDITOR="$EDITOR"
 export TERMINAL="alacritty"
 # export BROWSER="brave"
 
@@ -66,7 +71,7 @@ zshaddhistory() {
 }
 
 ### Customize Prompt ###
-if command -v brew starship &> /dev/null; then
+if command -v starship >/dev/null; then
     eval "$(starship init zsh)"
 else
     zinit ice as"command" from"gh-r" \
@@ -187,7 +192,7 @@ bindkey -M vicmd "^A" beginning-of-line # vi: C-a
 bindkey -M vicmd "^E" end-of-line       # vi: C-e
 
 # Change the cursor between 'Line' and 'Block' shape
-function zle-keymap-select zle-line-init zle-line-finish {
+zle-keymap-select() {
     case "${KEYMAP}" in
         main|viins)
             printf '\033[6 q' # line cursor
@@ -197,6 +202,15 @@ function zle-keymap-select zle-line-init zle-line-finish {
             ;;
     esac
 }
+
+zle-line-init() {
+    zle-keymap-select
+}
+
+zle-line-finish() {
+    printf '\033[6 q' # line cursor
+}
+
 zle -N zle-line-init
 zle -N zle-line-finish
 zle -N zle-keymap-select
