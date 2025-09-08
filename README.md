@@ -4,7 +4,7 @@ Managed by
 
 - [Homebrew Bundle](https://github.com/Homebrew/homebrew-bundle)
 - [GNU stow](https://www.gnu.org/software/stow/)
-- [asdf](https://asdf-vm.com/)
+- [mise](https://github.com/jdx/mise)
 - [zinit](https://github.com/zdharma-continuum/zinit)
 
 ## Installation
