@@ -87,7 +87,7 @@ history = 10000
 save_to_clipboard = true
 semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
-[terminal.shell]
+[shell]
 args = ["new-session", "-D", "-c", "#{pane_current_path}"]
 program = "/opt/homebrew/bin/tmux"
 
