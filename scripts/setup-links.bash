@@ -38,10 +38,23 @@ done
 # Clean broken symlinks
 ###########################################################
 if [ "$clean_broken" = 1 ]; then
-    log 'Searching for broken symlinks in ~/.config...'
-    
+    log 'Searching for broken symlinks in ~/.config and home directory...'
+
     # Find broken symlinks that point to dotfiles packages
     broken_links=()
+
+    # Search in home directory (excluding .config to avoid duplicates)
+    while IFS= read -r -d '' link; do
+        if [[ -L "$link" ]] && [[ ! -e "$link" ]]; then
+            target=$(readlink "$link")
+            # Check if the symlink points to our dotfiles packages or scripts
+            if [[ "$target" == *"dotfiles/packages/"* ]] || [[ "$target" == *"dotfiles/scripts/"* ]]; then
+                broken_links+=("$link")
+            fi
+        fi
+    done < <(find "$HOME" -maxdepth 1 -type l -print0 2>/dev/null)
+
+    # Search in ~/.config
     while IFS= read -r -d '' link; do
         if [[ -L "$link" ]] && [[ ! -e "$link" ]]; then
             target=$(readlink "$link")
@@ -51,18 +64,31 @@ if [ "$clean_broken" = 1 ]; then
             fi
         fi
     done < <(find "$HOME/.config" -type l -print0 2>/dev/null)
-    
+
+    # Search in ~/.local/bin for broken script links
+    if [[ -d "$HOME/.local/bin" ]]; then
+        while IFS= read -r -d '' link; do
+            if [[ -L "$link" ]] && [[ ! -e "$link" ]]; then
+                target=$(readlink "$link")
+                # Check if the symlink points to our dotfiles scripts
+                if [[ "$target" == *"dotfiles/scripts/"* ]]; then
+                    broken_links+=("$link")
+                fi
+            fi
+        done < <(find "$HOME/.local/bin" -type l -print0 2>/dev/null)
+    fi
+
     if [ ${#broken_links[@]} -eq 0 ]; then
         log 'No broken symlinks found.'
         exit 0
     fi
-    
+
     log "Found ${#broken_links[@]} broken symlinks:"
     for link in "${broken_links[@]}"; do
         target=$(readlink "$link")
         echo "  $link -> $target"
     done
-    
+
     echo
     read -p "Do you want to remove these broken symlinks? (y/N): " -n 1 -r
     echo
