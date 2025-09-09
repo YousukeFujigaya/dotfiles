@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 set -e
-# shellcheck source=./scripts/common.bash
-source "$(dirname "$0")/common.bash"
-source "$(dirname "$0")/utils.sh"
+# shellcheck source=./scripts/common
+source "$(dirname "$0")/common"
+source "$(dirname "$0")/utils"
 
-[ "$(uname)" != "Darwin" ] && log 'This machine is not macOS!' && exit
+if ! is_macos; then
+    log_error 'This machine is not macOS!'
+    exit 1
+fi
 [ -n "$SKIP_HOMEBREW" ] && exit
 export SKIP_APT="true"
+
+# Check prerequisites
+log_step "PREREQ" "Checking prerequisites..."
+check_internet || exit 1
+check_xcode_tools
 
 ###########################################################
 # Options
@@ -35,18 +43,18 @@ done
 ###########################################################
 arch_name="$(uname -m)"
 
-if type brew >/dev/null; then
-    log "Homebrew is already installed."
+if command_exists brew; then
+    log_info "Homebrew is already installed."
 else
     if [[ "${arch_name}" = "x86_64" && ! -f /usr/local/bin/brew ]]; then
         log 'Installing Homebrew...'
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-        export PATH="usr/local/bin:$PATH"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        export PATH="/usr/local/bin:$PATH"
         log "Updating Homebrew..."
         brew update
     elif [[ "${arch_name}" = "arm64" && ! -f /opt/homebrew/bin/brew ]]; then
         log 'Installing Homebrew...'
-        arch -arm64e /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        arch -arm64e /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         export PATH="/opt/homebrew/bin:$PATH"
         log "Updating Homebrew..."
         brew update
@@ -54,8 +62,12 @@ else
 fi
 
 if [ "$update_homebrew" ]; then
-    log "Updating Homebrew..."
-    brew update
+    log_step "UPDATE" "Updating Homebrew..."
+    if ! brew update; then
+        log_warn "Homebrew update failed, but continuing..."
+    else
+        log_success "Homebrew updated successfully"
+    fi
 fi
 
 if [ ! "$skip_apps" ]; then

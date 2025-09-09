@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -e
+# shellcheck source=./scripts/common
+source "$(dirname "$0")/common"
+source "$(dirname "$0")/utils"
+
+if command -v mise >/dev/null 2>&1; then
+    if is_file "$HOME/.local/bin/setup-mise"; then
+        /bin/bash "$HOME/.local/bin/setup-mise"
+    else
+        /bin/bash "$CUR_DIR/setup-mise"
+    fi
+else
+    log_warn "mise is not installed. Attempting to install via homebrew..."
+    if command -v brew >/dev/null 2>&1; then
+        brew install mise
+        log_success "mise installed successfully"
+        # Retry setup-mise after installation
+        if is_file "$HOME/.local/bin/setup-mise"; then
+            /bin/bash "$HOME/.local/bin/setup-mise"
+        else
+            /bin/bash "$CUR_DIR/setup-mise"
+        fi
+    else
+        log_error "Both mise and homebrew are missing. Please run setup-homebrew first."
+        exit 1
+    fi
+fi

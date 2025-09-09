@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
-# shellcheck source=./scripts/common.bash
-source "$(dirname "$0")/common.bash"
-source "$(dirname "$0")/utils.sh"
+# shellcheck source=./scripts/common
+source "$(dirname "$0")/common"
+source "$(dirname "$0")/utils"
 
 DOTFILES_HOME="$GHQ_ROOT_PATH"/github.com/"$GITHUB_USER_NAME"/dotfiles
 STOW_PACKAGES_PATH="$DOTFILES_HOME"/packages
@@ -119,11 +119,11 @@ if [ "$unlink_all" = 1 ]; then
     submodules=$(awk '/path/ {print $3}' "$DOTFILES_HOME/.gitmodules" | sed 's|.*/||')
     full_paths="$(fd --hidden --no-ignore -t f -H -I -E "$submodules" -E "zsh" . "$STOW_PACKAGES_PATH")"
 
+    # Extract unique package names from paths
     unlink_packages=()
-    for packages in "$full_paths"; do
-        unlink_packages=($(echo "$full_paths" | sed -n 's|.*/packages/\([^/]*\)/.*|\1|p'))
-        unlink_packages+=("$unlink_packages") # TODO: 配列に重複がある
-    done
+    while IFS= read -r package_name; do
+        [[ " ${unlink_packages[*]} " =~ " ${package_name} " ]] || unlink_packages+=("$package_name")
+    done < <(echo "$full_paths" | sed -n 's|.*/packages/\([^/]*\)/.*|\1|p' | sort -u)
 
     log 'Unlinking all packages...'
     for package in "${unlink_packages[@]}"; do
@@ -162,11 +162,25 @@ chmod 700 "$HOME/.ssh"
 
 ### Stow link ###
 log 'Linking packages...'
-stow -vd "$STOW_PACKAGES_PATH" -t "$HOME" $(ls $STOW_PACKAGES_PATH)
+# Use array to handle package names with spaces safely
+packages=()
+while IFS= read -r -d '' package; do
+    packages+=("$(basename "$package")")
+done < <(find "$STOW_PACKAGES_PATH" -mindepth 1 -maxdepth 1 -type d -print0)
+
+if [ ${#packages[@]} -gt 0 ]; then
+    stow -vd "$STOW_PACKAGES_PATH" -t "$HOME" "${packages[@]}"
+fi
 
 # -------------------------------------------------------------------------
 log 'Linking scripts...'
 ensure_dir "$HOME/.local/bin"
-ln -sfv "$DOTFILES_HOME/scripts/"* "$HOME/.local/bin"
+# Link individual scripts safely
+for script in "$DOTFILES_HOME/scripts/"*; do
+    if [ -f "$script" ]; then
+        script_name="$(basename "$script")"
+        safe_symlink "$script" "$HOME/.local/bin/$script_name"
+    fi
+done
 
 # -------------------------------------------------------------------------

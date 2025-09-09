@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
-# shellcheck source=./scripts/common.bash
-source "$(dirname "$0")/common.bash"
-source "$(dirname "$0")/utils.sh"
+# shellcheck source=./scripts/common
+source "$(dirname "$0")/common"
+source "$(dirname "$0")/utils"
 
 export MISE_DATA_DIR="$XDG_DATA_HOME/mise"
 export MISE_CONFIG_DIR="$XDG_CONFIG_HOME/mise"
@@ -45,8 +45,12 @@ if [ -f ~/.tool-versions ]; then
         version=$(echo "$line" | awk '{print $2}')
         
         if [ -n "$tool" ] && [ -n "$version" ]; then
-            log "Installing $tool@$version..."
-            mise install "$tool@$version" || log "Warning: Failed to install $tool@$version"
+            log_step "INSTALL" "Installing $tool@$version..."
+            if mise install "$tool@$version"; then
+                log_success "Installed $tool@$version"
+            else
+                log_warn "Failed to install $tool@$version, continuing..."
+            fi
         fi
     done < ~/.tool-versions
     

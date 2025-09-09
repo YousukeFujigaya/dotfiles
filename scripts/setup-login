@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
-# shellcheck source=./scripts/common.bash
-source "$(dirname "$0")/common.bash"
-source "$(dirname "$0")/utils.sh"
+# shellcheck source=./scripts/common
+source "$(dirname "$0")/common"
+source "$(dirname "$0")/utils"
 
 ###########################################################
 # GitHub CLI Login

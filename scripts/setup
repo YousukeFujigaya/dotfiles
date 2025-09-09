@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# shellcheck source=./scripts/common
+source "$(dirname "$0")/common"
+source "$(dirname "$0")/utils"
+
+# Setup error handling
+setup_error_handling
+
+if is_file "$HOME/.local/bin/setup"; then
+    log "load scripts in $HOME/.local/bin"
+
+    /bin/bash "$HOME/.local/bin/setup-homebrew"
+    /bin/bash "$HOME/.local/bin/setup-apt"
+    /bin/bash "$HOME/.local/bin/setup-links"        # スクリプト更新
+    /bin/bash "$HOME/.local/bin/macos-defaults"     # システム設定
+    /bin/bash "$HOME/.local/bin/setup-runtime"      # Homebrew後なのでmiseが利用可能
+    /bin/bash "$HOME/.local/bin/setup-zinit"
+    /bin/bash "$HOME/.local/bin/setup-nvim"
+    /bin/bash "$HOME/.local/bin/setup-login"
+
+else
+    /bin/bash "$CUR_DIR/setup-homebrew"
+    /bin/bash "$CUR_DIR/setup-apt"
+    /bin/bash "$CUR_DIR/setup-links"        # スクリプトを早期にグローバル化
+    /bin/bash "$CUR_DIR/macos-defaults"     # システム設定は後回し
+    /bin/bash "$CUR_DIR/setup-runtime"      # Homebrew後なのでmiseが利用可能
+    /bin/bash "$CUR_DIR/setup-zinit"
+    /bin/bash "$CUR_DIR/setup-nvim"
+    /bin/bash "$CUR_DIR/setup-login"
+fi
+
+echo ✨ All Done!

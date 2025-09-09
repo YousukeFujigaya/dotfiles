@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -e
-# shellcheck source=./scripts/common.bash
+# shellcheck source=./scripts/common
 
-source "$(dirname "$0")/common.bash"
-source "$(dirname "$0")/utils.sh"
+source "$(dirname "$0")/common"
+source "$(dirname "$0")/utils"
 
 if ! is_dir "$GHQ_ROOT_PATH/github.com/$GITHUB_USER_NAME/nvim"; then
     log "Clone Nvim Repository..."
