@@ -3,7 +3,11 @@
 echo "🔧 Setting up local configuration..."
 
 LOCAL_CONFIG="$HOME/.config/zsh/.zshrc.local"
-TEMPLATE_CONFIG="$HOME/.config/zsh/.zshrc.local.template"
+# Try symlinked template first (after setup-links), then fallback to repo location
+TEMPLATE_CONFIG="$HOME/templates/zsh/.zshrc.local.template"
+if [ ! -f "$TEMPLATE_CONFIG" ]; then
+    TEMPLATE_CONFIG="$DOTFILES_HOME/packages/templates/templates/zsh/.zshrc.local.template"
+fi
 
 # Skip if local config already exists
 if [ -f "$LOCAL_CONFIG" ]; then
