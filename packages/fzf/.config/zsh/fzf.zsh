@@ -25,7 +25,7 @@ if [[ -n ${TMUX-} ]]; then
     __FZF_CMD="fzf-tmux"
     __FZF_CMD_OPTS=(
         -p
-        80%
+        90%
     )
 
     export FZF_DEFAULT_OPTS="$(
@@ -44,7 +44,7 @@ EOF
         --bind 'ctrl-p:preview-half-page-up,ctrl-n:preview-half-page-down'"
 
     # export FZF_TMUX_OPTS="-p 90% -y45"
-    export FZF_TMUX_OPTS="-p 96% -y45"
+    export FZF_TMUX_OPTS="-p 90%"
 
 else
 
