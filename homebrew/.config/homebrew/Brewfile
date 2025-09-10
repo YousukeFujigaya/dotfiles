@@ -85,28 +85,28 @@ cask "google-japanese-ime"  # Japanese input method editor
 cask "iterm2"  # Terminal emulator for macOS
 cask "keyboardcleantool"  # Disable keyboard for cleaning
 cask "notion"  # All-in-one workspace for notes and collaboration
-cask "notion-calendar"  # Calendar app by Notion
+# cask "notion-calendar"  # Calendar app by Notion
 cask "obsidian"  # Knowledge management and note-taking
 cask "raindropio"  # Bookmark manager and web clipper
 cask "raycast"  # Productivity launcher and tool
 cask "simplenote"  # Simple note-taking app
-cask "spotify"  # Music streaming service
+# cask "spotify"  # Music streaming service
 cask "visual-studio-code"  # Code editor by Microsoft
-cask "wezterm"  # GPU-accelerated terminal emulator
+cask "visual-studio-code@insiders"  # Insider build of VS Code
+# cask "wezterm"  # GPU-accelerated terminal emulator
 
 ### --- Apps from AppStore --- ###
 mas "Amphetamine", id: 937984704  # Keep Mac awake utility
 mas "Dropover", id: 1355679052  # Drag and drop shelf utility
 mas "HazeOver", id: 430798174  # Distraction dimmer for focus
-mas "Kindle", id: 302584613  # Amazon's e-book reader
-mas "LINE", id: 539883307  # Messaging app
+# mas "Kindle", id: 302584613  # Amazon's e-book reader
+# mas "LINE", id: 539883307  # Messaging app
 mas "Magnet", id: 441258766  # Window management tool
-mas "NotePlan", id: 1505432629  # Note-taking and task management
-mas "Pages", id: 409201541  # Apple's word processor
+# mas "NotePlan", id: 1505432629  # Note-taking and task management
 mas "ReminderBridge", id: 6745492181  # Reminder synchronization tool
 mas "RunCat", id: 1429033973  # CPU usage monitor in menu bar
-mas "Xcode", id: 497799835  # Apple's IDE for iOS/macOS development
-mas "Yoink", id: 457622435  # Drag and drop shelf for files
+# mas "Xcode", id: 497799835  # Apple's IDE for iOS/macOS development
+# mas "Yoink", id: 457622435  # Drag and drop shelf for files
 
 ### --- VSCode Extensions --- ###
 vscode "be5invis.toml"  # TOML language support
