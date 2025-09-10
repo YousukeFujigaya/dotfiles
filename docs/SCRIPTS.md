@@ -215,19 +215,10 @@ setup-links [OPTIONS]
 |------------|------|
 | `-u, --unlink PACKAGES` | 指定パッケージのリンクを解除 |
 | `-uall, --unlink-all` | 全リンクを解除 |
-| `--clean-broken` | 壊れたシンボリックリンクをクリーンアップ |
 
 #### 実行内容
 
-##### 1. クリーンアップモード (`--clean-broken`)
-```bash
-setup-links --clean-broken
-```
-- dotfilesパッケージを指す壊れたリンクを検索
-- 対象: `$HOME`, `$HOME/.config`, `$HOME/.local/bin`
-- インタラクティブな削除確認
-
-##### 2. リンク解除モード
+##### 1. リンク解除モード
 ```bash
 # 特定パッケージ
 setup-links --unlink vim nvim
@@ -236,11 +227,12 @@ setup-links --unlink vim nvim
 setup-links --unlink-all
 ```
 
-##### 3. 通常リンク作成
+##### 2. 通常リンク作成
 ```bash
 setup-links
 ```
-1. **必要ディレクトリ作成**
+1. **自動クリーンアップ**: dotfilesパッケージを指す壊れたリンクを自動削除
+2. **必要ディレクトリ作成**
    ```
    $XDG_CONFIG_HOME
    $XDG_STATE_HOME  
@@ -248,8 +240,8 @@ setup-links
    $HOME/.ssh (権限700)
    ```
 
-2. **パッケージリンク**: `packages/`内の全ディレクトリをstowでリンク
-3. **スクリプトリンク**: `scripts/`内のスクリプトを`$HOME/.local/bin`にリンク
+3. **パッケージリンク**: `packages/`内の全ディレクトリをstowでリンク
+4. **スクリプトリンク**: `scripts/`内のスクリプトを`$HOME/.local/bin`にリンク
 
 #### ⭐️ グローバルスクリプトアクセス機能
 ```bash
@@ -452,8 +444,8 @@ setup-homebrew
 
 #### 3. 壊れたシンボリックリンク
 ```bash
-# 自動クリーンアップ
-setup-links --clean-broken
+# setup-links実行時に自動クリーンアップ
+setup-links
 
 # 手動確認
 find $HOME -type l ! -exec test -e {} \; -print 2>/dev/null

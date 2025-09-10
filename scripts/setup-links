@@ -26,10 +26,6 @@ for i in "$@"; do
         unlink_all=1
         shift
         ;;
-    --clean-broken)
-        clean_broken=1
-        shift
-        ;;
     *) ;;
     esac
 done
@@ -37,8 +33,8 @@ done
 ###########################################################
 # Clean broken symlinks
 ###########################################################
-if [ "$clean_broken" = 1 ]; then
-    log 'Searching for broken symlinks in ~/.config and home directory...'
+clean_broken_symlinks() {
+    log 'Cleaning broken symlinks...'
 
     # Find broken symlinks that point to dotfiles packages
     broken_links=()
@@ -78,31 +74,15 @@ if [ "$clean_broken" = 1 ]; then
         done < <(find "$HOME/.local/bin" -type l -print0 2>/dev/null)
     fi
 
-    if [ ${#broken_links[@]} -eq 0 ]; then
-        log 'No broken symlinks found.'
-        exit 0
-    fi
-
-    log "Found ${#broken_links[@]} broken symlinks:"
-    for link in "${broken_links[@]}"; do
-        target=$(readlink "$link")
-        echo "  $link -> $target"
-    done
-
-    echo
-    read -p "Do you want to remove these broken symlinks? (y/N): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if [ ${#broken_links[@]} -gt 0 ]; then
+        log "Found ${#broken_links[@]} broken symlinks, removing them..."
         for link in "${broken_links[@]}"; do
             log "Removing broken symlink: $link"
             rm "$link"
         done
         log 'Broken symlinks removed successfully.'
-    else
-        log 'Skipped removing broken symlinks.'
     fi
-    exit 0
-fi
+}
 
 ###########################################################
 # Unlink
@@ -139,6 +119,9 @@ if [ "$unlink_all" = 1 ]; then
 
     exit
 fi
+
+# Clean broken symlinks before linking
+clean_broken_symlinks
 
 ##########################################################
 # link
