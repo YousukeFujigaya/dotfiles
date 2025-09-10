@@ -20,13 +20,13 @@ sudo nvram SystemAudioVolume=%00
 ###########################################################
 
 # Interface Style
-defaults write "Apple Global Domain" AppleInterfaceStyle -string Dark # ダークモードに設定 #default: Light
+defaults write NSGlobalDomain AppleInterfaceStyle -string Dark # ダークモードに設定 #default: Light
 
 # Performance & Animation
 defaults write -g NSWindowResizeTime -float 0.001 # ダイアログ・ウィンドウリサイズ速度を高速化 #default: 0.2
 defaults write com.apple.Accessibility ReduceMotionEnabled -bool true # 視覚効果・モーション・アニメーションを減らす #default: false
-defaults write -g NSScrollViewRubberbanding -bool false # スクロール時のバウンドアニメーションを無効 #default: true
-defaults write -g NSAutomaticWindowAnimationsEnabled -bool false # ファイル・ウィンドウアニメーションを無効 #default: true
+defaults write -g NSScrollViewRubberbanding -bool false # スクロール時のバウンドアニメーションを停止 #default: true
+defaults write -g NSAutomaticWindowAnimationsEnabled -bool false # ファイル・ウィンドウアニメーションを停止 #default: true
 
 ###########################################################
 # Security & Privacy
@@ -54,7 +54,7 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true # �
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true # USBディスクで`.DS_Store`を作らない #default: false
 
 # Cloud Storage
-# defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false # ファイル保存デフォルトをiCloudに保存 #default: true
+# defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false # ファイル保存デフォルトをローカルに設定 #default: true
 
 # System Folders
 chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library # 「ライブラリ」フォルダを常に表示 #default: hidden
@@ -66,7 +66,7 @@ chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library # 「ラ�
 # Hot Corners
 # Values: 0=no-op, 2=Mission Control, 3=App windows, 4=Desktop, 5=Start screensaver,
 #         6=Disable screensaver, 7=Dashboard, 10=Display sleep, 11=Launchpad, 12=Notification Center
-# defaults write com.apple.dock wvous-bl-corner -int 10 # 左下角: ディスプレイをスリープ #default: 0
+# defaults write com.apple.dock wvous-bl-corner -int 10 # 左下ホットコーナーでディスプレイスリープ #default: 0
 # defaults write com.apple.dock wvous-bl-modifier -int 0 # 修飾キーなし #default: 0
 
 # Spaces Behavior
@@ -92,9 +92,19 @@ defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false #
 # defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false # 引用符の自動置換 #default: true
 
 # Key Mappings
-# CapsLock を Ctrl に変更 (macOS再起動が必要) #default: CapsLock
+# CapsLock を Ctrl に変更 (macOS再起動が必要) - JIS以外のキーボードのみ #default: CapsLock
 keyboard_id="$(ioreg -c AppleEmbeddedKeyboard -r | grep -Eiw "VendorID|ProductID" | awk '{ print $4 }' | paste -s -d'-\n' -)-0"
-defaults -currentHost write -g com.apple.keyboard.modifiermapping.${keyboard_id} -array-add "
+
+# JISキーボードかどうかを判定（入力ソースでJIS配列を検出）
+is_jis_keyboard() {
+    # 現在の入力ソースまたはキーボード設定からJIS配列を検出
+    defaults read ~/Library/Preferences/com.apple.HIToolbox.plist AppleSelectedInputSources 2>/dev/null | grep -q "com.apple.keylayout.Japanese" || \
+    system_profiler SPHardwareDataType | grep -q "Japanese"
+}
+
+# JIS以外のキーボードの場合のみCapsLock→Ctrl変更を適用
+if ! is_jis_keyboard; then
+    defaults -currentHost write -g com.apple.keyboard.modifiermapping.${keyboard_id} -array-add "
 <dict>
   <key>HIDKeyboardModifierMappingDst</key>\
   <integer>30064771300</integer>\
@@ -102,13 +112,17 @@ defaults -currentHost write -g com.apple.keyboard.modifiermapping.${keyboard_id}
   <integer>30064771129</integer>\
 </dict>
 "
+    echo "✅ CapsLock → Ctrl mapping applied (non-JIS keyboard detected)"
+else
+    echo "⏭️  CapsLock mapping skipped (JIS keyboard detected)"
+fi
 
 # Input Source Switching
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 "<dict><key>enabled</key><false/></dict>" # Ctrl+Space入力ソース切り替え機能 #default: true
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 61 "<dict><key>enabled</key><false/></dict>" # Ctrl+Opt+Space入力ソース切り替え機能 #default: false
 
 # Shortcuts (Commented)
-# defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 27 "..." # 次のウィンドウ操作をOpt+Tabに #default: Cmd+`
+# defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 27 "..." # 次のウィンドウ操作をOpt+Tabに変更 #default: Cmd+`
 
 ###########################################################
 # Trackpad & Mouse
@@ -132,7 +146,7 @@ defaults write -g com.apple.trackpad.scaling -float 2.5 # トラックパッド�
 defaults write -g com.apple.mouse.scaling -float 1.5 # マウスの移動速度 #default: 0.6875
 
 # Mouse Settings (Commented)
-# defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseButtonMode TwoButton # Bluetoothマウスを2ボタンモードに #default: OneButton
+# defaults write com.apple.driver.AppleBluetoothMultitouch.mouse MouseButtonMode TwoButton # Bluetoothマウス2ボタンモード #default: OneButton
 
 ###########################################################
 # Dock
@@ -150,8 +164,8 @@ defaults write com.apple.dock showhidden -bool true # 隠しアプリ透過表�
 # Layout & Size (Commented)
 # defaults write com.apple.dock orientation -string right # Dockを右側に配置 #default: "bottom"
 defaults write com.apple.dock tilesize -int 56 # Dockアイコンサイズ #default: 64
-# defaults write com.apple.dock magnification -bool false # マウスオーバー拡大表示機能 #default: true
-# defaults write com.apple.dock largesize -int 128 # 拡大時のアイコンサイズ #default: 128
+# defaults write com.apple.dock magnification -bool false # Dockマウスオーバー拡大機能 #default: true
+defaults write com.apple.dock largesize -int 80 # 拡大時のアイコンサイズ #default: 128
 
 # Window Effects (Commented)
 # defaults write com.apple.dock mineffect -string "scale" # ウィンドウ最小化エフェクト #default: "genie"
@@ -198,35 +212,35 @@ defaults write com.apple.finder QLEnableTextSelection -bool true # Quick Look上
 # defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true # リムーバブルメディアをデスクトップに表示 #default: true
 
 # Additional Options (Commented)
-# defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false # 拡張子変更の警告を無効 #default: true
-# defaults write com.apple.finder WarnOnEmptyTrash -bool false # ゴミ箱を空にする警告を無効 #default: true
+# defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false # 拡張子変更の警告 #default: true
+# defaults write com.apple.finder WarnOnEmptyTrash -bool false # ゴミ箱を空にする警告 #default: true
 
 ###########################################################
 # Menu Bar & System UI
 ###########################################################
 
 # Menu Bar Visibility
-# defaults write NSGlobalDomain _HIHideMenuBar -bool true # メニューバーを常に非表示 #default: false
+# defaults write NSGlobalDomain _HIHideMenuBar -bool true # メニューバー自動非表示 #default: false
 
 # Clock & Time Display
 defaults write com.apple.iCal "number of hours displayed" 24 # カレンダーを24時間表示 #default: 12
-defaults write com.apple.menuextra.clock DateFormat -string "M月d日(EEE)  h:mm:ss" # 時計の表示フォーマット #default: "EEE MMM d  h:mm:ss a"
+# defaults write com.apple.menuextra.clock DateFormat -string "M月d日(EEE)  h:mm:ss" # 時計の表示フォーマット (macOS Big Sur以降では動作せず) #default: "EEE MMM d  h:mm:ss a"
 
 # Battery Display
 defaults write com.apple.menuextra.battery ShowPercent -string "YES" # バッテリー残量をパーセンテージで表示 #default: "NO"
 
 # Sound (Commented)
-# defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0 # システムの警告音量を0に #default: 0.6065
-# defaults write NSGlobalDomain com.apple.sound.beep.feedback -bool false # 音量変更時の効果音を無効 #default: true
+# defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0 # システム警告音量を0に設定 #default: 0.6065
+# defaults write NSGlobalDomain com.apple.sound.beep.feedback -bool false # 音量変更時の効果音 #default: true
 
 ###########################################################
 # Applications
 ###########################################################
 
 # Safari
-defaults write com.apple.Safari AutoFillPasswords -bool false # パスワードの自動入力・記録を無効 #default: true
+defaults write com.apple.Safari AutoFillPasswords -bool false # Safariパスワード自動入力機能を停止 #default: true
 # defaults write com.apple.Safari IncludeDevelopMenu -bool true # 開発メニューを表示 #default: false
-# defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true # デベロッパーツールを有効 #default: false
+# defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true # Safari開発者ツール表示 #default: false
 # defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true # スマート検索フィールドに完全なURLを表示 #default: false
 
 # QuickTime Player
@@ -236,9 +250,9 @@ defaults write com.apple.QuickTimePlayerX NSQuitAlwaysKeepsWindows -bool false #
 defaults write com.apple.Preview NSQuitAlwaysKeepsWindows -bool false # Preview: 起動時に前回開いたウィンドウを開かない #default: true
 
 # TextEdit (Commented)
-# defaults write com.apple.TextEdit RichText -int 0 # プレーンテキストで新規文書を作成 #default: 1
-# defaults write com.apple.TextEdit PlainTextEncoding -int 4 # UTF-8エンコーディング #default: 0
-# defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4 # 保存時のエンコーディング #default: 0
+# defaults write com.apple.TextEdit RichText -int 0 # TextEdit新規文書をプレーンテキストに設定 #default: 1
+# defaults write com.apple.TextEdit PlainTextEncoding -int 4 # TextEditプレーンテキストエンコーディングをUTF-8に設定 #default: 0
+# defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4 # TextEdit保存時エンコーディングをUTF-8に設定 #default: 0
 
 # Activity Monitor (Commented)
 # defaults write com.apple.ActivityMonitor OpenMainWindow -bool true # アクティビティモニタを開くときメインウィンドウを表示 #default: false
@@ -250,7 +264,7 @@ defaults write com.apple.Preview NSQuitAlwaysKeepsWindows -bool false # Preview:
 
 # Screenshot Settings
 defaults write com.apple.screencapture name ScreenShot # スクリーンショットのファイル名 #default: "Screenshot"
-defaults write com.apple.screencapture disable-shadow -bool true # ウィンドウキャプチャ時の影を無効 #default: false
+defaults write com.apple.screencapture disable-shadow -bool true # スクリーンショットウィンドウの影を非表示 #default: false
 
 # Set screenshot location (Google Drive if available, otherwise ~/Screenshot)
 if [ -n "$GOOGLE_DRIVE_EMAIL" ]; then
@@ -277,11 +291,11 @@ else
     echo "📸 Screenshot location set to: ~/Screenshot"
 fi
 
-# defaults write com.apple.screencapture include-date -bool false # ファイル名に日付を含めない #default: true
+# defaults write com.apple.screencapture include-date -bool false # スクリーンショットファイル名から日付除去 #default: true
 # defaults write com.apple.screencapture type -string "png" # スクリーンショットの形式 #default: "png"
 
 # Image Capture (Commented)
-# defaults write com.apple.ImageCapture disableHotPlug -bool true # イメージキャプチャのホットプラグを無効 #default: false
+# defaults write com.apple.ImageCapture disableHotPlug -bool true # イメージキャプチャホットプラグ機能停止 #default: false
 
 ###########################################################
 # Advanced System Settings (Commented)
@@ -291,14 +305,14 @@ fi
 # defaults write NSGlobalDomain AppleAccentColor -int 6 # アクセントカラー (0-7) #default: -1
 # defaults write NSGlobalDomain AppleHighlightColor -string "1.000000 0.749020 0.823529 Pink" # ハイライト色 #default: varies
 # defaults write NSGlobalDomain AppleAquaColorVariant -int 1 # ボタン・メニューの表示 (1: Blue, 6: Graphite) #default: 1
-# defaults write NSGlobalDomain AppleMiniaturizeOnDoubleClick -bool false # タイトルバーダブルクリックで最小化を無効 #default: true
+# defaults write NSGlobalDomain AppleMiniaturizeOnDoubleClick -bool false # タイトルバーダブルクリックで最小化 #default: true
 
 # Dialog & Panel Behavior
 # defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true # 保存ダイアログを詳細表示で開く #default: false
 # defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true # 印刷ダイアログを詳細表示で開く #default: false
 
 # Application Termination
-# defaults write NSGlobalDomain NSDisableAutomaticTermination -bool true # アプリの自動終了を無効 #default: false
+# defaults write NSGlobalDomain NSDisableAutomaticTermination -bool true # アプリ自動終了機能停止 #default: false
 
 # Time Machine
 # defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true # 新しいディスクをバックアップに提案しない #default: false
