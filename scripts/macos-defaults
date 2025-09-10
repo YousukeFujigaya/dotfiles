@@ -70,7 +70,11 @@ chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library # 「ラ�
 # defaults write com.apple.dock wvous-bl-modifier -int 0 # 修飾キーなし #default: 0
 
 # Spaces Behavior
-defaults write com.apple.dock mru-spaces -bool false # Spacesを使用頻度で自動並び替えしない #default: true
+defaults write com.apple.dock mru-spaces -bool false # Spacesを使用頻度で自動並び替え #default: true
+
+# Window Restoration (ログイン時にウィンドウを前回の状態に復元)
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool true # ログイン時に前回のウィンドウを復元 #default: false
+defaults write com.apple.loginwindow TALLogoutSavesState -bool true # ログアウト時にアプリケーション状態を保存 #default: false
 
 ###########################################################
 # Keyboard & Text Input
@@ -284,7 +288,7 @@ else
     # Auto-detect Google Drive path
     GOOGLE_DRIVE_BASE="$HOME/Library/CloudStorage"
     SCREENSHOT_DIR=""
-    
+
     # Find Google Drive directory
     for gdrive_dir in "$GOOGLE_DRIVE_BASE"/GoogleDrive-*; do
         if [ -d "$gdrive_dir/My Drive/Screenshot" ]; then
@@ -292,7 +296,7 @@ else
             break
         fi
     done
-    
+
     if [ -n "$SCREENSHOT_DIR" ]; then
         defaults write com.apple.screencapture location "$SCREENSHOT_DIR"
         echo "📸 Screenshot location set to: $SCREENSHOT_DIR"
