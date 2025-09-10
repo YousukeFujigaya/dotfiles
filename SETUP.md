@@ -81,10 +81,9 @@ setup-mise                      # 開発ツールのインストール/更新
 setup-mise --skip-update       # mise自体の更新をスキップ
 
 # 設定ファイル管理
-setup-links                     # 全dotfilesを再リンク
+setup-links                     # 全dotfilesを再リンク（壊れたリンクを自動クリーンアップ）
 setup-links --unlink package   # 特定パッケージのリンクを解除
 setup-links --unlink-all       # 全リンクを解除
-setup-links --clean-broken     # 壊れたシンボリックリンクをクリーンアップ
 
 # システム設定
 macos-defaults                    # macOS設定を再適用
@@ -174,7 +173,7 @@ export INSTALL_DIR="/custom/path"   # インストール先を変更
 
 3. **アップデート後のリンク切れ**
    ```bash
-   setup-links --clean-broken
+   setup-links  # 実行時に壊れたリンクを自動クリーンアップ
    ```
 
 #### ログ出力
@@ -284,8 +283,7 @@ Scripts in `scripts/` are symlinked to `~/.local/bin/` via `setup-links`, making
 setup-local-config         # Setup local configuration
 setup-homebrew --update    # Update Homebrew and packages
 setup-mise                 # Install/update development tools
-setup-links                # Relink all dotfiles
-setup-links --clean-broken # Clean broken symlinks
+setup-links                # Relink all dotfiles (automatically cleans broken links)
 macos-defaults             # Reapply macOS settings
 ```
 
