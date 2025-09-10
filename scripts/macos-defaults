@@ -270,25 +270,38 @@ defaults write com.apple.screencapture disable-shadow -bool true # スクリー�
 if [ -n "$GOOGLE_DRIVE_EMAIL" ]; then
     # Use environment variable if set
     GOOGLE_DRIVE_PATH="$HOME/Library/CloudStorage/GoogleDrive-${GOOGLE_DRIVE_EMAIL}/My Drive/Screenshot"
+    if [ -d "$GOOGLE_DRIVE_PATH" ]; then
+        SCREENSHOT_DIR="$GOOGLE_DRIVE_PATH"
+        defaults write com.apple.screencapture location "$SCREENSHOT_DIR"
+        echo "📸 Screenshot location set to: $SCREENSHOT_DIR"
+    else
+        echo "⚠️  Google Drive Screenshot folder not found at: $GOOGLE_DRIVE_PATH"
+        defaults write com.apple.screencapture location ~/Screenshot
+        mkdir -p ~/Screenshot
+        echo "📸 Screenshot location set to: ~/Screenshot (fallback)"
+    fi
 else
     # Auto-detect Google Drive path
-    GOOGLE_DRIVE_PATH="$HOME/Library/CloudStorage/GoogleDrive-"*"/My Drive/Screenshot"
-fi
-
-if ls $GOOGLE_DRIVE_PATH 2>/dev/null 1>&2; then
-    # Google Drive found
-    if [ -n "$GOOGLE_DRIVE_EMAIL" ]; then
-        SCREENSHOT_DIR="$GOOGLE_DRIVE_PATH"
+    GOOGLE_DRIVE_BASE="$HOME/Library/CloudStorage"
+    SCREENSHOT_DIR=""
+    
+    # Find Google Drive directory
+    for gdrive_dir in "$GOOGLE_DRIVE_BASE"/GoogleDrive-*; do
+        if [ -d "$gdrive_dir/My Drive/Screenshot" ]; then
+            SCREENSHOT_DIR="$gdrive_dir/My Drive/Screenshot"
+            break
+        fi
+    done
+    
+    if [ -n "$SCREENSHOT_DIR" ]; then
+        defaults write com.apple.screencapture location "$SCREENSHOT_DIR"
+        echo "📸 Screenshot location set to: $SCREENSHOT_DIR"
     else
-        SCREENSHOT_DIR=$(ls -d $GOOGLE_DRIVE_PATH 2>/dev/null | head -1)
+        # Google Drive not found - use local folder
+        defaults write com.apple.screencapture location ~/Screenshot
+        mkdir -p ~/Screenshot
+        echo "📸 Screenshot location set to: ~/Screenshot (Google Drive not found)"
     fi
-    defaults write com.apple.screencapture location "$SCREENSHOT_DIR" # 保存場所をGoogle Driveに #default: ~/Desktop
-    echo "📸 Screenshot location set to: $SCREENSHOT_DIR"
-else
-    # Google Drive not found - use local folder
-    defaults write com.apple.screencapture location ~/Screenshot # 保存場所をローカルフォルダに #default: ~/Desktop
-    mkdir -p ~/Screenshot # Create directory if it doesn't exist
-    echo "📸 Screenshot location set to: ~/Screenshot"
 fi
 
 # defaults write com.apple.screencapture include-date -bool false # スクリーンショットファイル名から日付除去 #default: true
