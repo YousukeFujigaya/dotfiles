@@ -221,3 +221,7 @@ zinit light @'zsh-users/zsh-autosuggestions' # MEMO: ここでloadしないとsh
 zinit wait lucid null silent nocd for \
   atinit'source "$ZDOTDIR/.zshrc.lazy"' \
   @'zdharma-continuum/null'
+
+### local configuration ###
+# Load local configuration if exists (not tracked by git)
+[ -f "$ZDOTDIR/.zshrc.local" ] && source "$ZDOTDIR/.zshrc.local"

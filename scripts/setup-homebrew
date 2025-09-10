@@ -73,9 +73,13 @@ fi
 if [ ! "$skip_apps" ]; then
     log "Installing Apps and CLIs..."
     if is_file "${REPO_DIR}/homebrew/.config/homebrew/Brewfile"; then
-        brew bundle install --file "${REPO_DIR}/homebrew/.config/homebrew/Brewfile" --no-lock $([ -n "$verbose" ] && echo -v)
+        brew bundle install --file "${REPO_DIR}/homebrew/.config/homebrew/Brewfile" $([ -n "$verbose" ] && echo -v)
+    elif is_file "${GHQ_ROOT_PATH}/github.com/${GITHUB_USER_NAME}/dotfiles/homebrew/.config/homebrew/Brewfile"; then
+        brew bundle install --file "${GHQ_ROOT_PATH}/github.com/${GITHUB_USER_NAME}/dotfiles/homebrew/.config/homebrew/Brewfile" $([ -n "$verbose" ] && echo -v)
     else
-        brew bundle install --file "${GHQ_ROOT_PATH}/github.com/${GITHUB_USER_NAME}/dotfiles/homebrew/.config/homebrew/Brewfile" --no-lock $([ -n "$verbose" ] && echo -v)
+        log "Brewfile not found. Please clone the dotfiles repository first:"
+        log "  ghq get https://github.com/${GITHUB_USER_NAME}/dotfiles"
+        exit 1
     fi
 fi
 

@@ -1,0 +1,17 @@
+# Local configuration template
+# This file contains local settings that should not be committed to git
+# Copy this file to .zshrc.local and customize as needed
+
+# Google Drive Email (used for screenshot path configuration)
+# export GOOGLE_DRIVE_EMAIL="your-email@gmail.com"
+
+# Other local environment variables
+# export CUSTOM_VAR="value"
+
+# Local aliases
+# alias myalias="command"
+
+# Local functions
+# function myfunction() {
+#     # your code here
+# }

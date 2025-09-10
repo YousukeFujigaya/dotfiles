@@ -52,11 +52,13 @@ BOOTSTRAP_MODE=3 curl -fsSL https://raw.githubusercontent.com/YousukeFujigaya/do
    - インストール完了後、自動的に処理続行
 2. **リポジトリクローン**: `~/Repos/github.com/YousukeFujigaya/dotfiles`に配置
 3. **各種セットアップスクリプト実行**:
-   - `macos-defaults`: macOSシステム設定
+   - `setup-local-config`: ローカル設定（環境変数、プライベート情報）
    - `setup-homebrew`: Homebrewとパッケージインストール
-   - `setup-mise`: 開発環境構築
-   - `setup-zinit`: Zshプラグイン環境
+   - `setup-apt`: APTパッケージ管理（Linux環境用）
    - `setup-links`: 設定ファイルのシンボリックリンク作成
+   - `macos-defaults`: macOSシステム設定
+   - `setup-runtime`: mise（開発環境構築）
+   - `setup-zinit`: Zshプラグイン環境
    - `setup-nvim`: Neovim設定
    - `setup-login`: ログインシェル設定
 
@@ -67,6 +69,9 @@ BOOTSTRAP_MODE=3 curl -fsSL https://raw.githubusercontent.com/YousukeFujigaya/do
 ### 利用可能なコマンド
 
 ```bash
+# ローカル設定
+setup-local-config             # ローカル設定ファイルのセットアップ
+
 # Homebrew関連
 setup-homebrew --update        # Homebrewとパッケージを更新
 setup-homebrew --skip-apps     # Homebrewのみインストール、アプリはスキップ
@@ -109,6 +114,30 @@ clean_old_backups
 ```
 
 ## カスタマイズ
+
+### ローカル設定
+
+**プライベート情報の管理**
+
+このdotfilesはGitHubで公開されているため、メールアドレスなどのプライベート情報は別途管理されます：
+
+- **設定ファイル**: `~/.config/zsh/.zshrc.local`（gitignoreに含まれる）
+- **テンプレート**: `.config/zsh/.zshrc.local.template`
+- **自動セットアップ**: `setup-local-config`スクリプトが初回実行時に自動で設定
+
+#### Google Drive設定
+
+スクリーンショットをGoogle Driveに保存する場合：
+
+```bash
+# 自動検出（Google Driveがインストール済みの場合）
+setup-local-config
+
+# 手動設定
+export GOOGLE_DRIVE_EMAIL="your-email@gmail.com"
+```
+
+設定されると、macOS-defaultsスクリプトでスクリーンショットの保存先が自動で設定されます。
 
 ### 環境変数
 ```bash
@@ -206,6 +235,45 @@ curl -fsSL https://raw.githubusercontent.com/YousukeFujigaya/dotfiles/main/boots
 - **GNU stow**: Dotfiles symlink manager
 - **CLI tools**: Defined in `homebrew/.config/homebrew/Brewfile`
 
+## Setup Process
+
+1. **Pre-checks**: macOS verification, internet connection, git availability
+2. **Repository cloning**: To `~/Repos/github.com/YousukeFujigaya/dotfiles`
+3. **Setup scripts execution**:
+   - `setup-local-config`: Local settings (environment variables, private info)
+   - `setup-homebrew`: Homebrew and package installation
+   - `setup-apt`: APT package management (for Linux environments)
+   - `setup-links`: Configuration file symlink creation
+   - `macos-defaults`: macOS system settings
+   - `setup-runtime`: mise (development environment setup)
+   - `setup-zinit`: Zsh plugin environment
+   - `setup-nvim`: Neovim configuration
+   - `setup-login`: Login shell configuration
+
+## Local Configuration
+
+**Private Information Management**
+
+Since these dotfiles are publicly available on GitHub, private information like email addresses is managed separately:
+
+- **Configuration file**: `~/.config/zsh/.zshrc.local` (included in gitignore)
+- **Template**: `.config/zsh/.zshrc.local.template`
+- **Auto-setup**: `setup-local-config` script automatically configures on first run
+
+### Google Drive Setup
+
+For saving screenshots to Google Drive:
+
+```bash
+# Auto-detection (if Google Drive is installed)
+setup-local-config
+
+# Manual setup
+export GOOGLE_DRIVE_EMAIL="your-email@gmail.com"
+```
+
+Once configured, the macOS-defaults script will automatically set up the screenshot save location.
+
 ## Global Script Access
 
 Scripts in `scripts/` are symlinked to `~/.local/bin/` via `setup-links`, making them globally accessible.
@@ -213,6 +281,7 @@ Scripts in `scripts/` are symlinked to `~/.local/bin/` via `setup-links`, making
 ## Available Commands
 
 ```bash
+setup-local-config         # Setup local configuration
 setup-homebrew --update    # Update Homebrew and packages
 setup-mise                 # Install/update development tools
 setup-links                # Relink all dotfiles

@@ -1,0 +1,109 @@
+#!/bin/sh
+
+echo "🔧 Setting up local configuration..."
+
+LOCAL_CONFIG="$HOME/.config/zsh/.zshrc.local"
+TEMPLATE_CONFIG="$HOME/.config/zsh/.zshrc.local.template"
+
+# Skip if local config already exists
+if [ -f "$LOCAL_CONFIG" ]; then
+    echo "✅ Local configuration already exists at $LOCAL_CONFIG"
+    exit 0
+fi
+
+# Create config directory if it doesn't exist
+mkdir -p "$(dirname "$LOCAL_CONFIG")"
+
+# Check Google Drive status
+GOOGLE_DRIVE_DIR="$HOME/Library/CloudStorage"
+GOOGLE_DRIVE_PATTERN="$GOOGLE_DRIVE_DIR/GoogleDrive-*"
+
+if [ -d "$GOOGLE_DRIVE_DIR" ] && ls $GOOGLE_DRIVE_PATTERN > /dev/null 2>&1; then
+    # Google Drive is installed and configured
+    DETECTED_EMAIL=$(basename "$(ls -d $GOOGLE_DRIVE_PATTERN 2>/dev/null | head -1)" | sed 's/GoogleDrive-//' 2>/dev/null)
+    
+    if [ -n "$DETECTED_EMAIL" ]; then
+        echo "📧 Auto-detected Google Drive email: $DETECTED_EMAIL"
+        cat > "$LOCAL_CONFIG" << EOF
+# Local configuration (auto-generated)
+# This file contains local settings that should not be committed to git
+
+# Google Drive Email (auto-detected)
+export GOOGLE_DRIVE_EMAIL="$DETECTED_EMAIL"
+
+# Add your custom local settings below
+# export CUSTOM_VAR="value"
+EOF
+        echo "✅ Created $LOCAL_CONFIG with auto-detected email"
+    else
+        echo "⚠️  Google Drive is installed but no email found in directory structure"
+        setup_manual_input
+    fi
+elif [ -d "/Applications/Google Drive.app" ] || [ -d "/Applications/Google Drive File Stream.app" ]; then
+    # Google Drive app is installed but not configured
+    echo "⚠️  Google Drive is installed but not configured yet"
+    echo "   Please set up Google Drive first, then run this script again"
+    echo "   Or enter your email manually:"
+    setup_manual_input
+else
+    # Google Drive is not installed
+    echo "ℹ️  Google Drive not detected"
+    echo "   Creating local config without Google Drive settings"
+    if [ -f "$TEMPLATE_CONFIG" ]; then
+        cp "$TEMPLATE_CONFIG" "$LOCAL_CONFIG"
+    else
+        cat > "$LOCAL_CONFIG" << EOF
+# Local configuration
+# This file contains local settings that should not be committed to git
+
+# Google Drive Email (set manually if needed)
+# export GOOGLE_DRIVE_EMAIL="your-email@gmail.com"
+
+# Add your custom local settings below
+# export CUSTOM_VAR="value"
+EOF
+    fi
+    echo "✅ Created $LOCAL_CONFIG from template"
+fi
+
+setup_manual_input() {
+    echo ""
+    printf "Enter your Google Drive email address (or press Enter to skip): "
+    read user_email
+    
+    if [ -n "$user_email" ]; then
+        cat > "$LOCAL_CONFIG" << EOF
+# Local configuration (manually configured)
+# This file contains local settings that should not be committed to git
+
+# Google Drive Email (manually set)
+export GOOGLE_DRIVE_EMAIL="$user_email"
+
+# Add your custom local settings below
+# export CUSTOM_VAR="value"
+EOF
+        echo "✅ Created $LOCAL_CONFIG with email: $user_email"
+    else
+        if [ -f "$TEMPLATE_CONFIG" ]; then
+            cp "$TEMPLATE_CONFIG" "$LOCAL_CONFIG"
+        else
+            cat > "$LOCAL_CONFIG" << EOF
+# Local configuration
+# This file contains local settings that should not be committed to git
+
+# Google Drive Email (set manually if needed)
+# export GOOGLE_DRIVE_EMAIL="your-email@gmail.com"
+
+# Add your custom local settings below
+# export CUSTOM_VAR="value"
+EOF
+        fi
+        echo "⏭️  Skipped email configuration. You can edit $LOCAL_CONFIG manually later"
+    fi
+}
+
+echo ""
+echo "📝 To complete the setup, reload your shell configuration:"
+echo "   source ~/.config/zsh/.zshrc"
+echo ""
+echo "📁 Local config file location: $LOCAL_CONFIG"

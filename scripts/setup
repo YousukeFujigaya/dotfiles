@@ -10,6 +10,7 @@ setup_error_handling
 if is_file "$HOME/.local/bin/setup"; then
     log "load scripts in $HOME/.local/bin"
 
+    /bin/bash "$HOME/.local/bin/setup-local-config" # ローカル設定（環境変数等）
     /bin/bash "$HOME/.local/bin/setup-homebrew"
     /bin/bash "$HOME/.local/bin/setup-apt"
     /bin/bash "$HOME/.local/bin/setup-links"        # スクリプト更新
@@ -20,6 +21,7 @@ if is_file "$HOME/.local/bin/setup"; then
     /bin/bash "$HOME/.local/bin/setup-login"
 
 else
+    /bin/bash "$CUR_DIR/setup-local-config" # ローカル設定（環境変数等）
     /bin/bash "$CUR_DIR/setup-homebrew"
     /bin/bash "$CUR_DIR/setup-apt"
     /bin/bash "$CUR_DIR/setup-links"        # スクリプトを早期にグローバル化
