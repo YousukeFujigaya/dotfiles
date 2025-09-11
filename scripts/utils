@@ -157,7 +157,7 @@ safe_symlink() {
             local current_target
             current_target="$(readlink "$target")"
             if [ "$current_target" = "$source" ]; then
-                log_info "Symlink already exists and is correct: $target -> $source"
+                # Symlink already exists and is correct - no output needed
                 return 0
             fi
             log_info "Removing existing symlink: $target"
