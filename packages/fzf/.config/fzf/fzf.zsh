@@ -10,7 +10,7 @@ fi
 
 # Key bindings
 # ------------
-source "${XDG_CONFIG_HOME}/zsh/fzf-key-bindings.zsh"
+source "${XDG_CONFIG_HOME}/fzf/fzf-key-bindings.zsh"
 
 #########################################################################
 # settings

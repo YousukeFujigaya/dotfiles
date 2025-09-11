@@ -108,6 +108,12 @@ y = 0
 [general]
 live_config_reload = true
 
+# Removed invalid renderer section
+
+[debug]
+# Reduce log output that might cause flickering
+log_level = "Error"
+
 [terminal]
 # Reduce terminal flickering
 osc52 = "CopyPaste"

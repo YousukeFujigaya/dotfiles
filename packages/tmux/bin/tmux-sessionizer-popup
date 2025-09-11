@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# tmux-sessionizer用のfzfポップアップ版
+# 既存のtmux-sessionizerと同じスタイルでポップアップ表示
+
+# tmux-sessionizerのパスを確認
+SESSIONIZER_PATH="$HOME/.local/share/tmux-sessionizer/tmux-sessionizer"
+
+if [ ! -f "$SESSIONIZER_PATH" ]; then
+    echo "tmux-sessionizer not found at $SESSIONIZER_PATH"
+    sleep 1
+    exit 1
+fi
+
+# tmux-sessionizerの設定を読み込み
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/tmux-sessionizer"
+CONFIG_FILE="$CONFIG_DIR/tmux-sessionizer.conf"
+
+# デフォルトの検索パス
+search_dirs=("$HOME/Repos/github.com/YousukeFujigaya" "$HOME/Projects" "$HOME/Dev")
+
+# 設定ファイルが存在する場合は読み込み
+if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+    if [ ${#TS_SEARCH_PATHS[@]} -gt 0 ]; then
+        search_dirs=("${TS_SEARCH_PATHS[@]}")
+    fi
+fi
+
+# 存在するディレクトリのみを対象にする
+existing_dirs=()
+for dir in "${search_dirs[@]}"; do
+    expanded_dir="${dir/#\~/$HOME}"  # ~を展開
+    [ -d "$expanded_dir" ] && existing_dirs+=("$expanded_dir")
+done
+
+if [ ${#existing_dirs[@]} -eq 0 ]; then
+    echo "No search directories found"
+    sleep 1
+    exit 1
+fi
+
+# find でディレクトリを検索
+selected=$(find "${existing_dirs[@]}" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | \
+    sort | \
+    fzf \
+        --height=100% \
+        --layout=reverse \
+        --border \
+        --prompt="Create/switch to session: " \
+        --header="Select directory for new session" \
+        --preview='
+            echo "Directory: $(basename {})"
+            echo "Path: $(echo {} | sed "s|^$HOME|~|")"
+            echo ""
+            if command -v eza >/dev/null 2>&1; then
+                echo "Tree:"
+                eza --tree --level=2 --icons --color=always --group-directories-first --ignore-glob=".git|node_modules|.DS_Store|*.log" {} 2>/dev/null || echo "  (empty or access denied)"
+            else
+                echo "Contents:"
+                ls -la --color=always {} 2>/dev/null | head -10 || echo "  (empty or access denied)"
+            fi
+        ' \
+        --preview-window="right:55%" \
+        --ansi)
+
+if [ -z "$selected" ]; then
+    exit 0
+fi
+
+# セッション名を生成（ディレクトリ名をベースに）
+session_name=$(basename "$selected" | tr . _)
+
+# 既にセッションが存在するかチェック
+if tmux has-session -t "$session_name" 2>/dev/null; then
+    # 既存セッションに切り替え
+    tmux switch-client -t "$session_name"
+else
+    # 新しいセッションを作成
+    tmux new-session -d -s "$session_name" -c "$selected"
+    tmux switch-client -t "$session_name"
+fi

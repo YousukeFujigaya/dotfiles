@@ -23,7 +23,6 @@ path=(
   "$GOPATH/bin"(N-/)
   "$DENO_INSTALL/bin"(N-/)
   "$GEM_HOME/bin"(N-/)
-  "$XDG_CONFIG_HOME/scripts/bin"(N-/)
   "$path[@]"
   "/Library/Apple/usr/bin"(N-/)
 )

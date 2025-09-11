@@ -3,25 +3,26 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
 
 
 ### fzf ###
-export FZF_HOME="$XDG_DATA_HOME/fzf"
-if [ ! -d "$GHQ_ROOT_PATH/github.com/junegunn/fzf" ]; then
-    ghq get junegunn/fzf
-    if [ ! -d "$FZF_HOME" ]; then
-        echo "Linking fzf Repository to $XDG_CONFIG_HOME ..."
-        ln -sfnv "$GHQ_ROOT_PATH/github.com/junegunn/fzf" "$XDG_DATA_HOME/fzf"
+[ -f "$XDG_CONFIG_HOME"/fzf/fzf.zsh ] && source "$XDG_CONFIG_HOME"/fzf/fzf.zsh
+
+### tmux-sessionizer ###
+export TMUX_SESSIONIZER_HOME="$XDG_DATA_HOME/tmux-sessionizer"
+if [ ! -d "$GHQ_ROOT_PATH/github.com/ThePrimeagen/tmux-sessionizer" ]; then
+    ghq get ThePrimeagen/tmux-sessionizer
+    if [ ! -d "$TMUX_SESSIONIZER_HOME" ]; then
+        echo "Linking tmux-sessionizer Repository to $XDG_DATA_HOME ..."
+        ln -sfnv "$GHQ_ROOT_PATH/github.com/ThePrimeagen/tmux-sessionizer" "$TMUX_SESSIONIZER_HOME"
     fi
 fi
-[ -f "$XDG_CONFIG_HOME"/zsh/fzf.zsh ] && source "$XDG_CONFIG_HOME"/zsh/fzf.zsh
 
 ### z ###
 export _Z_HOME="$XDG_DATA_HOME/z"
 export _Z_DATA="$XDG_CACHE_HOME/z/z" # default ~/.z
 if [ ! -d "$GHQ_ROOT_PATH/github.com/rupa/z" ]; then
     ghq get rupa/z
-    mkdir "$XDG_CACHE_HOME"/z
     if [ ! -d "$_Z_HOME" ]; then
-        echo "Linking z Repository to $XDG_CONFIG_HOME ..."
-        ln -sfnv "$GHQ_ROOT_PATH/github.com/rupa/z" "$XDG_DATA_HOME/z"
+        echo "Linking z Repository to $XDG_DATA_HOME ..."
+        ln -sfnv "$GHQ_ROOT_PATH/github.com/rupa/z" "$_Z_HOME"
     fi
 fi
 source "${_Z_HOME}/z.sh"
@@ -343,7 +344,75 @@ export EDITOR="vi"
 command -v vim >/dev/null && EDITOR="vim"
 command -v nvim >/dev/null && EDITOR="nvim"
 
+# nvim: VIMINIT環境変数を無効化してinit.luaを使用
+alias nvim='VIMINIT= nvim'
+
 export GIT_EDITOR="$EDITOR"
+
+### tmux popup keybindings ###
+# tmuxセッション作成/切り替え（Ctrl+F）
+tmux_sessionizer_popup() {
+    if [ -n "$TMUX" ]; then
+        tmux display-popup -w 90% -h 90% -E "~/.local/bin/tmux-sessionizer-popup"
+    else
+        ~/.local/bin/tmux-sessionizer-popup
+    fi
+    zle reset-prompt
+}
+zle -N tmux_sessionizer_popup
+bindkey '^F' tmux_sessionizer_popup
+
+# tmuxセッション切り替え（Ctrl+S）
+tmux_switch_session() {
+    if [ -n "$TMUX" ]; then
+        tmux display-popup -w 90% -h 90% -E "~/.local/bin/tmux-switch-session"
+    else
+        echo "Not in tmux session"
+    fi
+    zle reset-prompt
+}
+zle -N tmux_switch_session
+bindkey '^S' tmux_switch_session
+
+# tmuxセッション削除（Ctrl+X）
+tmux_kill_session() {
+    if [ -n "$TMUX" ]; then
+        tmux display-popup -w 90% -h 90% -E "~/.local/bin/tmux-kill-session"
+    else
+        echo "Not in tmux session"
+    fi
+    zle reset-prompt
+}
+zle -N tmux_kill_session
+bindkey '^X' tmux_kill_session
+
+# lf ファイルマネージャー（Ctrl+E）
+lf_popup() {
+    if [ -n "$TMUX" ]; then
+        tmux display-popup -w 90% -h 90% -E "~/.local/bin/lf-tmux"
+    else
+        lf
+    fi
+    zle reset-prompt
+}
+zle -N lf_popup
+bindkey '^E' lf_popup
+
+### lf ###
+# lfでディレクトリ変更をシェルに反映する関数
+lf() {
+    tmp="$(mktemp)"
+    command lf -last-dir-path="$tmp" "$@"
+    if [ -f "$tmp" ]; then
+        dir="$(cat "$tmp")"
+        rm -f "$tmp"
+        if [ -d "$dir" ]; then
+            if [ "$dir" != "$(pwd)" ]; then
+                cd "$dir"
+            fi
+        fi
+    fi
+}
 
 e() {
     if [ $# -eq 0 ]; then
