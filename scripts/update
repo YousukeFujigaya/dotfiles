@@ -1,0 +1,264 @@
+#!/bin/sh
+
+###########################################################
+# System Update Script
+###########################################################
+# Updates all package managers: Homebrew, zinit, and mise
+# Usage: ./scripts/update [--dry-run] [--force]
+
+# Load utils for logging functions
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+. "$SCRIPT_DIR/utils"
+
+# Configuration
+DRY_RUN=false
+FORCE=false
+LOG_FILE="$HOME/.local/state/system-update.log"
+
+# Parse command line arguments
+for arg in "$@"; do
+    case $arg in
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        --force)
+            FORCE=true
+            shift
+            ;;
+        --help|-h)
+            echo "Usage: $0 [--dry-run] [--force]"
+            echo "  --dry-run    Show what would be updated without making changes"
+            echo "  --force      Skip confirmation prompts"
+            exit 0
+            ;;
+        *)
+            log_error "Unknown argument: $arg"
+            exit 1
+            ;;
+    esac
+done
+
+# Ensure log directory exists
+mkdir -p "$(dirname "$LOG_FILE")"
+
+# Log function with timestamp
+log_with_timestamp() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
+    echo "$1"
+}
+
+# Check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Check prerequisites
+check_prerequisites() {
+    log "🔍 Checking prerequisites..."
+    
+    local missing_commands=""
+    
+    if ! command_exists brew; then
+        missing_commands="$missing_commands homebrew"
+    fi
+    
+    # Check if zinit directory exists (zinit is a zsh function, not a command)
+    if [ ! -d "${XDG_DATA_HOME:-$HOME/.local/share}/zinit/bin" ]; then
+        missing_commands="$missing_commands zinit"
+    fi
+    
+    if ! command_exists mise; then
+        missing_commands="$missing_commands mise"
+    fi
+    
+    if [ -n "$missing_commands" ]; then
+        log_error "Missing required commands:$missing_commands"
+        log_info "Please install missing package managers before running this script"
+        return 1
+    fi
+    
+    # Check network connectivity
+    if ! ping -c 1 google.com >/dev/null 2>&1; then
+        log_error "No internet connection detected"
+        return 1
+    fi
+    
+    log_success "All prerequisites met"
+    return 0
+}
+
+# Update Homebrew
+update_homebrew() {
+    log "🍺 Updating Homebrew..."
+    
+    if [ "$DRY_RUN" = true ]; then
+        echo "  Would run: brew update && brew upgrade && brew cleanup"
+        return 0
+    fi
+    
+    log_with_timestamp "Starting Homebrew update"
+    
+    if brew update; then
+        log_success "Homebrew formulae updated"
+    else
+        log_error "Failed to update Homebrew formulae"
+        return 1
+    fi
+    
+    if brew upgrade; then
+        log_success "Homebrew packages upgraded"
+    else
+        log_error "Failed to upgrade Homebrew packages"
+        return 1
+    fi
+    
+    if brew cleanup; then
+        log_success "Homebrew cleanup completed"
+    else
+        log_warning "Homebrew cleanup had issues (non-fatal)"
+    fi
+    
+    log_with_timestamp "Homebrew update completed"
+    return 0
+}
+
+# Update zinit
+update_zinit() {
+    log "⚡ Updating zinit..."
+    
+    if [ "$DRY_RUN" = true ]; then
+        echo "  Would run: zsh -c 'zinit self-update && zinit update --all'"
+        return 0
+    fi
+    
+    log_with_timestamp "Starting zinit update"
+    
+    # Run zinit commands in zsh context
+    if zsh -c 'source "${XDG_DATA_HOME:-$HOME/.local/share}/zinit/bin/zinit.zsh" && zinit self-update'; then
+        log_success "zinit self-updated"
+    else
+        log_error "Failed to self-update zinit"
+        return 1
+    fi
+    
+    if zsh -c 'source "${XDG_DATA_HOME:-$HOME/.local/share}/zinit/bin/zinit.zsh" && zinit update --all'; then
+        log_success "All zinit plugins updated"
+    else
+        log_error "Failed to update zinit plugins"
+        return 1
+    fi
+    
+    log_with_timestamp "zinit update completed"
+    return 0
+}
+
+# Update mise
+update_mise() {
+    log "🔧 Updating mise..."
+    
+    if [ "$DRY_RUN" = true ]; then
+        echo "  Would run: mise self-update && mise upgrade"
+        return 0
+    fi
+    
+    log_with_timestamp "Starting mise update"
+    
+    if mise self-update; then
+        log_success "mise self-updated"
+    else
+        log_error "Failed to self-update mise"
+        return 1
+    fi
+    
+    if mise upgrade; then
+        log_success "All mise tools upgraded"
+    else
+        log_warning "Some mise tools may have failed to upgrade (check manually)"
+    fi
+    
+    log_with_timestamp "mise update completed"
+    return 0
+}
+
+# Main update function
+run_updates() {
+    local start_time=$(date '+%Y-%m-%d %H:%M:%S')
+    log_with_timestamp "=== System update started ==="
+    
+    local failed_updates=""
+    
+    # Update each package manager
+    if ! update_homebrew; then
+        failed_updates="$failed_updates homebrew"
+    fi
+    
+    if ! update_zinit; then
+        failed_updates="$failed_updates zinit"
+    fi
+    
+    if ! update_mise; then
+        failed_updates="$failed_updates mise"
+    fi
+    
+    # Report results
+    local end_time=$(date '+%Y-%m-%d %H:%M:%S')
+    log_with_timestamp "=== System update completed ==="
+    
+    if [ -z "$failed_updates" ]; then
+        log_success "All package managers updated successfully! 🎉"
+        log_info "Started: $start_time"
+        log_info "Finished: $end_time"
+        log_info "Log saved to: $LOG_FILE"
+        return 0
+    else
+        log_error "Some updates failed:$failed_updates"
+        log_info "Check the log file for details: $LOG_FILE"
+        return 1
+    fi
+}
+
+# Main execution
+main() {
+    echo "🚀 System Package Update Script"
+    echo "================================"
+    
+    if [ "$DRY_RUN" = true ]; then
+        log_info "DRY RUN MODE - No changes will be made"
+    fi
+    
+    # Check prerequisites
+    if ! check_prerequisites; then
+        exit 1
+    fi
+    
+    # Confirmation prompt (unless --force)
+    if [ "$FORCE" = false ] && [ "$DRY_RUN" = false ]; then
+        echo ""
+        echo "This will update:"
+        echo "  • Homebrew (formulas and packages)"
+        echo "  • zinit (self-update and all plugins)"
+        echo "  • mise (self-update and all tools)"
+        echo ""
+        printf "Continue? [y/N]: "
+        read -r response
+        case "$response" in
+            [yY][eE][sS]|[yY])
+                ;;
+            *)
+                log_info "Update cancelled by user"
+                exit 0
+                ;;
+        esac
+    fi
+    
+    # Run updates
+    if run_updates; then
+        exit 0
+    else
+        exit 1
+    fi
+}
+
+# Run main function
+main "$@"
