@@ -8,7 +8,7 @@ export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 
 ### zsh ###
-export ZDOTDIR="$XDG_CONFIG_HOME/zsh" # .zshrc を ~/.config/zsh から読み込むように設定
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 
 ### github.com ###
 export GITHUB_USER_NAME="YousukeFujigaya"
@@ -22,6 +22,8 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 export HOMEBREW_BUNDLE_FILE="$XDG_CONFIG_HOME/homebrew/Brewfile"
 
 ### Vim ###
+# XDG Base Directory compliance for vim - forces vim to use ~/.config/vim/vimrc instead of ~/.vimrc
+# Note: nvim also reads VIMINIT, so we use alias 'VIMINIT= nvim' to bypass this for nvim
 export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | so $MYVIMRC'
 
 ### Node.js ###

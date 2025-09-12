@@ -91,6 +91,8 @@ export FZF_CTRL_T_COMMAND=$(
     --strip-cwd-prefix \
     --hidden \
     --exclude '{.git,node_modules}/**' ) \
+  || ( (type rg > /dev/null) &&
+    rg --files --hidden -g '!.git/*' -g '!node_modules/*' ) \
   || $find_ignore f -print 2> /dev/null
 EOF
 )
@@ -116,53 +118,7 @@ export FZF_ALT_C_COMMAND=$(
   || $find_ignore d -print 2> /dev/null
 EOF
 )
-export FZF_ALT_C_OPTS="--preview 'exa --tree -L 3 {} | head -200'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree -L 3 {} | head -200'"
 
-#########################################################################
-# functions
-#########################################################################
-# カレントディレクトリ以下のディレクトリ検索・移動
-find_cd() {
-    setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2>/dev/null
-    local selected_dir=("$(fd . --type d | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-} ${FZF_ALT_C_OPTS-} \
-        --bind=ctrl-r:toggle-sort,ctrl-z:ignore \
-        --exit-0 --query '$LBUFFER'" $(__fzfcmd))")
-    if [ -n "$selected_dir" ]; then
-        BUFFER="cd ${selected_dir}"
-        zle accept-line
-    fi
-    zle -R -c # refresh screen
-}
-zle -N find_cd
-bindkey '^X' find_cd
-
-# Tree表示
-fzf-ghq() {
-    local repo=("$(ghq list | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-}" \
-        $(__fzfcmd) --prompt 'Repository> ' --preview "ghq list --full-path --exact {} | xargs exa \
-        -h --long --icons --classify --git --no-permissions --no-user --no-filesize --git-ignore --sort modified --reverse --tree --level 4")")
-    if [ -n "$repo" ]; then
-        repo=$(ghq list --full-path --exact $repo)
-        BUFFER="cd ${repo}"
-        zle accept-line
-    fi
-    zle clear-screen
-}
-zle -N fzf-ghq
-bindkey '^[s' fzf-ghq
-
-# かつていたことのあるディレクトリに移動する
-fzf-z-search() {
-    local res=$(z | sort -rn | cut -c 12- | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-}" \
-        $(__fzfcmd) --preview "echo {} | xargs exa \
-        -h --long --icons --classify --git --no-permissions --no-user --no-filesize --git-ignore --sort modified --reverse --tree --level 4")
-    if [ -n "$res" ]; then
-        BUFFER+="cd $res"
-        zle accept-line
-    else
-        return 1
-    fi
-}
-
-zle -N fzf-z-search
-bindkey '^z' fzf-z-search
+# Note: fzf functions have been moved to ~/.config/zsh/rc.d/02-functions.zsh
+# This file now contains only fzf configuration and settings

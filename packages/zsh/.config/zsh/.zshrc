@@ -1,30 +1,78 @@
-### zinit ###
-# ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-# ZINIT[ZCOMPDUMP_PATH]="$XDG_STATE_HOME/zcompdump"
-# [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
-# [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-# source "${ZINIT_HOME}/zinit.zsh"
+#########################################################################
+# ZSH CONFIGURATION - MAIN STARTUP FILE
+#########################################################################
+#
+# This is the primary zsh configuration file, optimized for fast startup.
+# Functions and complex settings are modularized in rc.d/ directory.
+#
+# LOADING ORDER:
+# 1. Core Settings (paths, environment, options)
+# 2. Plugin Manager Setup (zinit)
+# 3. Essential Tools (mise, starship)
+# 4. Key Bindings (immediate response required)
+# 5. Lazy Loading (plugins via .zshrc.lazy)
+# 6. Local Configuration (user customizations)
+#
+# KEYBINDING REFERENCE:
+# Basic Navigation & Editing:
+# - Ctrl+R : History search (custom widget)
+# - Ctrl+A : Beginning of line
+# - Ctrl+E : End of line
+# - Ctrl+K : Kill line
+# - Ctrl+Q : Push line or edit
+# - Ctrl+W : Backward kill word
+# - Alt+G : ghq directory selection
+#
+# fzf Integration (fzf-key-bindings.zsh):
+# - Ctrl+T : File selection widget
+# - Alt+C : Directory selection widget
+#
+# Custom Directory Navigation (02-functions.zsh):
+# - Ctrl+Z : fz() - Smart directory jump
+# - Ctrl+B : find_cd() - Local directory search
+# - Alt+S : fzf-ghq() - Repository navigation
+# - Ctrl+G : ghq session management
+#
+# tmux Integration (02-functions.zsh):
+# - Ctrl+F : tmux session create/switch
+# - Ctrl+S : tmux session switch
+# - Ctrl+X : tmux session kill
+# - Ctrl+E : lf file manager popup
+#
+# Other Tools (04-plugins.zsh):
+# - Ctrl+N : navi command search
+# - Arrow Keys : zsh-history-substring-search
+#
+#########################################################################
 
+# ==========================================
+#  Core Environment Setup
+# ==========================================
+
+### zinit plugin manager ###
 typeset -gAH ZINIT
 ZINIT[HOME_DIR]="$XDG_DATA_HOME/zinit"
 ZINIT[ZCOMPDUMP_PATH]="$XDG_STATE_HOME/zsh/zcompdump"
+
+# Check if zinit is installed, show warning if not
+if [[ ! -d "${ZINIT[HOME_DIR]}/bin" ]]; then
+    echo "⚠️  Warning: zinit not found. Run 'setup-zinit' to install."
+    return 1
+fi
+
 source "${ZINIT[HOME_DIR]}/bin/zinit.zsh"
 
-### paths ###
+### PATH Configuration ###
 typeset -U path
 typeset -U fpath
 
 path=(
-  "/opt/homebrew/bin"(N-/)
-  "/opt/homebrew/sbin"(N-/)
-  "$HOME/.local/bin"(N-/)
+  "$HOME/.local/bin"(N-/)       # User binaries (highest priority)
   "$HOME/.local/share/npm/bin"(N-/)
-  "$CARGO_HOME/bin"(N-/)
-  "$GOPATH/bin"(N-/)
-  "$DENO_INSTALL/bin"(N-/)
-  "$GEM_HOME/bin"(N-/)
-  "$path[@]"
-  "/Library/Apple/usr/bin"(N-/)
+  "$path[@]"                    # Existing PATH (includes mise-managed paths)
+  "/opt/homebrew/bin"(N-/)      # Homebrew binaries
+  "/opt/homebrew/sbin"(N-/)     # Homebrew system binaries
+  "/Library/Apple/usr/bin"(N-/) # Apple developer tools
 )
 
 fpath=(
@@ -32,12 +80,13 @@ fpath=(
   "$fpath[@]"
 )
 
-### history ###
+### Environment Variables ###
+# History configuration
 export HISTFILE="$XDG_STATE_HOME/zsh/history"
 export HISTSIZE=12000
 export SAVEHIST=1000000
 
-### Editor ###
+# Editor preferences
 export EDITOR="vi"
 command -v vim >/dev/null && EDITOR="vim"
 command -v nvim >/dev/null && EDITOR="nvim"
@@ -45,7 +94,7 @@ export GIT_EDITOR="$EDITOR"
 export TERMINAL="alacritty"
 # export BROWSER="brave"
 
-### options ###
+### Shell Options ###
 setopt NO_BEEP
 setopt IGNOREEOF
 setopt AUTO_PUSHD
@@ -64,116 +113,32 @@ setopt MAGIC_EQUAL_SUBST
 setopt PRINT_EIGHT_BIT
 setopt NO_FLOW_CONTROL
 
-zshaddhistory() {
-  local line="${1%%$'\n'}"
-  [[ ! "$line" =~ "^(cd|z|which|history|jj?|lazygit|la|ll|ls|rm|rmdir|trash)($| )" ]]
-}
+# ==========================================
+#  Runtime Tools
+# ==========================================
 
-
-### runtime tool manager ###
+### Runtime tool manager ###
 if command -v mise >/dev/null 2>&1; then
     eval "$(mise activate zsh)"
 fi
 
-### Starship ###
+### Prompt (Starship) ###
+# Load starship early for immediate prompt display
 export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/starship.toml"
 if command -v starship >/dev/null; then
     eval "$(starship init zsh)"
 else
-    zinit ice as"command" from"gh-r" \
-        atclone"./starship init zsh > init.zsh; ./starship completions zsh > _starship" \
-        atpull"%atclone" src"init.zsh"
-    zinit light starship/starship
+    echo "⚠️  Warning: starship not found. Install with 'brew install starship'"
 fi
 
-### key bindings ###
-clear-screen-and-update-prompt() {
-    # ALMEL_STATUS=0
-    # almel::precmd
-    zle .clear-screen
-}
-zle -N clear-screen clear-screen-and-update-prompt
+# ==========================================
+#  Key Bindings
+# ==========================================
 
-widget::history() {
-    setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2> /dev/null
-    local selected=( "$(history -inr 1 | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-} --scheme=history ${FZF_CTRL_R_OPTS-} \
-        --prompt 'History> ' --exit-0 --query '$LBUFFER'" $(__fzfcmd) | cut -d' ' -f4- | sed 's/\\n/\n/g')" )
-    if [ -n "$selected" ]; then
-        BUFFER="$selected"
-        CURSOR=$#BUFFER
-    fi
-    zle -R -c # refresh screen
-}
-
-widget::ghq::source() {
-    local session color icon green="\e[32m" blue="\e[34m" reset="\e[m" checked="󰄲" unchecked="󰄱"
-    local sessions=($(tmux list-sessions -F "#S" 2>/dev/null))
-
-    ghq list | sort | while read -r repo; do
-        session="${repo//[:. ]/-}"
-        color="$blue"
-        icon="$unchecked"
-        if (( ${+sessions[(r)$session]} )); then
-            color="$green"
-            icon="$checked"
-        fi
-        printf "$color$icon %s$reset\n" "$repo"
-    done
-}
-
-widget::ghq::select() {
-    local root="$(ghq root)"
-    widget::ghq::source | FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS-} --exit-0 --prompt 'Repository> ' \
-      --preview='fzf-preview-git ${(q)root}/{+2}' --preview-window='right:50%' " \
-      $(__fzfcmd) | cut -d' ' -f2-
-    # widget::ghq::source | fzf --exit-0 --preview="fzf-preview-git ${(q)root}/{+2}" --preview-window="right:60%" | cut -d' ' -f2-
-}
-
-widget::ghq::dir() {
-    local selected="$(widget::ghq::select)"
-    if [ -z "$selected" ]; then
-        return
-    fi
-
-    local repo_dir="$(ghq list --exact --full-path "$selected")"
-    BUFFER="cd ${(q)repo_dir}"
-    zle accept-line
-    zle -R -c # refresh screen
-}
-
-widget::ghq::session() {
-    local selected="$(widget::ghq::select)"
-    if [ -z "$selected" ]; then
-        return
-    fi
-
-    local repo_dir="$(ghq list --exact --full-path "$selected")"
-    local session_name="${selected//[:. ]/-}"
-
-    if [ -z "$TMUX" ]; then
-        BUFFER="tmux new-session -A -s ${(q)session_name} -c ${(q)repo_dir}"
-        zle accept-line
-    elif [ "$(tmux display-message -p "#S")" = "$session_name" ] && [ "$PWD" != "$repo_dir" ]; then
-        BUFFER="cd ${(q)repo_dir}"
-        zle accept-line
-    else
-        tmux new-session -d -s "$session_name" -c "$repo_dir" 2>/dev/null
-        tmux switch-client -t "$session_name"
-    fi
-    zle -R -c # refresh screen
-}
-
-forward-kill-word() {
-  zle vi-forward-word
-  zle vi-backward-kill-word
-}
-
-zle -N widget::history
-zle -N widget::ghq::dir
-zle -N widget::ghq::session
-zle -N forward-kill-word
-
+# Set vi mode as default
 bindkey -v
+
+# Essential key bindings (functions defined in 02-functions.zsh)
 bindkey "^R" widget::history            # C-r
 bindkey "^G" widget::ghq::session       # C-g
 bindkey "^[g" widget::ghq::dir          # Alt-g
@@ -182,7 +147,6 @@ bindkey "^E" end-of-line                # C-e
 bindkey "^K" kill-line                  # C-k
 bindkey "^Q" push-line-or-edit          # C-q
 bindkey "^W" vi-backward-kill-word      # C-w
-bindkey "^X^W" forward-kill-word        # C-x C-w
 bindkey "^?" backward-delete-char       # backspace
 bindkey "^[[3~" delete-char             # delete
 bindkey "^[[1;3D" backward-word         # Alt + arrow-left
@@ -192,37 +156,24 @@ bindkey "^[[1;33~" kill-word            # Alt + delete
 bindkey -M vicmd "^A" beginning-of-line # vi: C-a
 bindkey -M vicmd "^E" end-of-line       # vi: C-e
 
-# Change the cursor between 'Line' and 'Block' shape
-zle-keymap-select() {
-    case "${KEYMAP}" in
-        main|viins)
-            printf '\033[6 q' # line cursor
-            ;;
-        vicmd)
-            printf '\033[2 q' # block cursor
-            ;;
-    esac
-}
+# ==========================================
+#  Plugin System
+# ==========================================
 
-zle-line-init() {
-    zle-keymap-select
-}
-
-zle-line-finish() {
-    printf '\033[6 q' # line cursor
-}
-
-zle -N zle-line-init
-zle -N zle-line-finish
-zle -N zle-keymap-select
-
-### plugins ###
-zinit light @'zsh-users/zsh-autosuggestions' # MEMO: ここでloadしないとshell起動時に機能しなかった。
-
+### Lazy Loading ###
+# Load all plugins and configurations asynchronously for optimal performance
 zinit wait lucid null silent nocd for \
   atinit'source "$ZDOTDIR/.zshrc.lazy"' \
   @'zdharma-continuum/null'
 
-### local configuration ###
+# ==========================================
+#  Local Configuration
+# ==========================================
+
+### User-specific Settings ###
 # Load local configuration if exists (not tracked by git)
 [ -f "$ZDOTDIR/.zshrc.local" ] && source "$ZDOTDIR/.zshrc.local"
+
+#########################################################################
+# END OF CONFIGURATION
+#########################################################################
