@@ -9,6 +9,7 @@ curl -fsSL https://raw.githubusercontent.com/YousukeFujigaya/dotfiles/main/boots
 ```
 
 ### インタラクティブモード
+
 実行時に以下の選択肢が表示されます：
 
 1. **フルセットアップ** - 新しいマシン向け（推奨）
@@ -16,7 +17,9 @@ curl -fsSL https://raw.githubusercontent.com/YousukeFujigaya/dotfiles/main/boots
 3. **セットアップスキップ** - リポジトリ更新のみ
 
 ### 自動化モード
+
 環境変数で非対話実行も可能：
+
 ```bash
 # フルセットアップ
 BOOTSTRAP_MODE=1 curl -fsSL https://raw.githubusercontent.com/YousukeFujigaya/dotfiles/main/bootstrap | sh
@@ -30,13 +33,15 @@ BOOTSTRAP_MODE=3 curl -fsSL https://raw.githubusercontent.com/YousukeFujigaya/do
 
 ## 前提条件
 
-- **macOS**: このセットアップはmacOS専用です
+- **プライマリOS**: このセットアップはmacOSに最適化されています
+- **Linux対応**: 限定的にLinux環境でも利用可能（Homebrew非対応機能は制限あり）
 - **インターネット接続**: パッケージのダウンロードに必要
-- **Command Line Tools**: 不足している場合は自動インストール
+- **Command Line Tools**: 不足している場合は自動インストール（macOSのみ）
 
 ## セットアップ内容
 
 ### インストールされるもの
+
 - **Homebrew**: macOSのパッケージマネージャー
 - **mise**: ランタイムバージョン管理ツール
 - **zinit**: Zshプラグインマネージャー
@@ -44,6 +49,7 @@ BOOTSTRAP_MODE=3 curl -fsSL https://raw.githubusercontent.com/YousukeFujigaya/do
 - **各種CLIツール**: `homebrew/.config/homebrew/Brewfile`で定義
 
 ### 実行される処理
+
 1. **事前チェック**: macOS確認、ネット接続、gitの存在確認（Command Line Tools自動インストール）
 
    **⭐️ 新品のMacでの初回実行**：
@@ -95,12 +101,15 @@ setup-zinit                     # zinitを再インストール/更新
 ## バックアップシステム
 
 ### 自動バックアップ
+
 既存ファイルを上書きする前に自動でバックアップを作成：
+
 - **保存場所**: `~/.local/state/dotfiles/backup/`（XDG準拠）
 - **命名規則**: `ファイル名.YYYYMMDD_HHMMSS`
 - **対象**: 上書きされる既存の設定ファイル
 
 ### バックアップ管理
+
 ```bash
 # バックアップ一覧表示
 list_backups
@@ -139,19 +148,22 @@ export GOOGLE_DRIVE_EMAIL="your-email@gmail.com"
 設定されると、macOS-defaultsスクリプトでスクリーンショットの保存先が自動で設定されます。
 
 ### 環境変数
+
 ```bash
 export SKIP_HOMEBREW=true           # Homebrewインストールをスキップ
 export INSTALL_DIR="/custom/path"   # インストール先を変更
 ```
 
 ### パッケージ追加
+
 - **Homebrewパッケージ**: `homebrew/.config/homebrew/Brewfile`を編集
-- **開発ツール**: `~/.tool-versions`を編集
+- **開発ツール**: `.mise.toml`を編集（公式推奨）または`~/.tool-versions`（asdf互換）
 - **カスタムスクリプト**: `scripts/`ディレクトリに追加
 
 ## エラー処理
 
 ### 安全機能
+
 - エラー発生時の行番号表示
 - 依存関係の事前チェック
 - 冪等性（複数回実行しても安全）
@@ -161,22 +173,27 @@ export INSTALL_DIR="/custom/path"   # インストール先を変更
 ### トラブルシューティング
 
 #### よくある問題
+
 1. **Command Line Toolsが未インストール**
+
    ```bash
    xcode-select --install
    ```
 
 2. **権限エラー**
+
    ```bash
    sudo xcode-select --reset
    ```
 
 3. **アップデート後のリンク切れ**
+
    ```bash
    setup-links  # 実行時に壊れたリンクを自動クリーンアップ
    ```
 
 #### ログ出力
+
 - 📌 一般的な情報
 - ℹ️  詳細情報
 - ✅ 成功
@@ -273,11 +290,43 @@ export GOOGLE_DRIVE_EMAIL="your-email@gmail.com"
 
 Once configured, the macOS-defaults script will automatically set up the screenshot save location.
 
+## グローバルスクリプトアクセス
+
+`scripts/`内のスクリプトは`setup-links`により`~/.local/bin/`にシンボリックリンクされ、グローバルアクセス可能になります。
+
+## 利用可能なコマンド
+
+### セットアップ系コマンド
+```bash
+setup-local-config         # ローカル設定のセットアップ
+setup-homebrew --update    # Homebrewとパッケージの更新
+setup-mise                 # 開発ツールのインストール/更新
+setup-links                # dotfilesの再リンク（壊れたリンクの自動クリーンアップ）
+macos-defaults             # macOS設定の再適用
+```
+
+### システム更新コマンド
+```bash
+update                     # 全パッケージマネージャーの一括更新（Homebrew、zinit、mise）
+update --dry-run           # 変更を加えずに更新内容をプレビュー
+update --force             # 確認プロンプトをスキップして即座に更新
+update --help              # 使用方法の表示
+```
+
+**システム更新機能の特徴：**
+- ✅ **安全な実行**: 包括的なエラーハンドリングとロールバック機能
+- ✅ **進行状況ログ**: 詳細なログを`~/.local/state/system-update.log`に保存
+- ✅ **事前チェック**: ネットワーク接続とツール利用可能性の検証
+- ✅ **インタラクティブ確認**: 変更前のユーザー確認（--forceでない場合）
+- ✅ **クロスシェル対応**: sh/bash/zsh環境から動作
+
 ## Global Script Access
 
 Scripts in `scripts/` are symlinked to `~/.local/bin/` via `setup-links`, making them globally accessible.
 
 ## Available Commands
+
+### Setup Commands
 
 ```bash
 setup-local-config         # Setup local configuration
@@ -286,6 +335,23 @@ setup-mise                 # Install/update development tools
 setup-links                # Relink all dotfiles (automatically cleans broken links)
 macos-defaults             # Reapply macOS settings
 ```
+
+### System Update Commands
+
+```bash
+update                     # Update all package managers (Homebrew, zinit, mise)
+update --dry-run           # Preview what would be updated without making changes
+update --force             # Skip confirmation prompts and update immediately
+update --help              # Show usage information
+```
+
+**System Update Features:**
+
+- ✅ **Safe execution**: Comprehensive error handling and rollback capability
+- ✅ **Progress logging**: Detailed logs saved to `~/.local/state/system-update.log`
+- ✅ **Prerequisites check**: Network connectivity and tool availability verification
+- ✅ **Interactive confirmation**: User confirmation before making changes (unless --force)
+- ✅ **Cross-shell compatibility**: Works from sh/bash/zsh environments
 
 ## Backup System
 
